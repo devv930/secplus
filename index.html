@@ -302,7 +302,7 @@
     <div class="intro-title" id="intro-greeting">Full Practice Exam</div>
     <div class="intro-sub" id="intro-sub-text">90 randomly selected questions from the full question pool, covering all five official SY0-701 exam domains. Each attempt is unique.</div>
     <div class="intro-grid">
-      <div class="intro-card"><div class="intro-card-title">Questions</div><div class="intro-card-val">100</div><div class="intro-card-sub">10 PBQs + 90 MCQs</div></div>
+      <div class="intro-card"><div class="intro-card-title">Questions</div><div class="intro-card-val">90</div><div class="intro-card-sub">10 PBQs + 80 MCQs</div></div>
       <div class="intro-card"><div class="intro-card-title">Pool Size</div><div class="intro-card-val" id="intro-pool-count">—</div><div class="intro-card-sub">Unique questions</div></div>
       <div class="intro-card"><div class="intro-card-title">Time Limit</div><div class="intro-card-val">90 min</div><div class="intro-card-sub">1 min per question</div></div>
       <div class="intro-card"><div class="intro-card-title">Passing Score</div><div class="intro-card-val">750 / 900</div><div class="intro-card-sub">≈ 83%</div></div>
@@ -2008,7 +2008,7 @@ function startPBQPhase() {
     if (pbq.type === 'ordering') {
       pbqState[idx] = { order: shuffleArray(pbq.steps.map((_,i)=>i)) };
     } else if (pbq.type === 'dragdrop') {
-      pbqState[idx] = { zoneMap: {}, selectedItem: null };
+      pbqState[idx] = { zoneMap: {}, selectedItem: null, itemOrder: shuffleArray([...Array(pbq.items.length).keys()]) };
     } else if (pbq.type === 'loganalysis') {
       pbqState[idx] = { answers: new Array(pbq.questions.length).fill(null) };
     }
@@ -2069,11 +2069,13 @@ function buildPBQHTML(idx) {
 function buildDDWidget(idx) {
   const pbq = pbqQuestions[idx];
   const state = pbqState[idx];
+  if (!state.itemOrder) state.itemOrder = shuffleArray([...Array(pbq.items.length).keys()]);
   const placedItems = new Set(Object.values(state.zoneMap).filter(v => v !== null && v !== undefined));
-  const itemsHTML = pbq.items.map((item, i) => {
+
+  // Render items in SHUFFLED order so position != zone index
+  const itemsHTML = state.itemOrder.map(i => {
     let cls = 'dd-item';
     if (pbqChecked) {
-      // Find which zone this item is in
       const myZone = Object.keys(state.zoneMap).find(z => state.zoneMap[z] === i);
       if (myZone !== undefined) {
         cls += pbq.correct[parseInt(myZone)] === i ? ' dd-ok' : ' dd-err';
@@ -2083,7 +2085,7 @@ function buildDDWidget(idx) {
       if (state.selectedItem === i) cls += ' dd-sel';
       else if (placedItems.has(i))  cls += ' dd-placed';
     }
-    return `<div class="${cls}" onclick="ddClickItem(${i},${idx})">${item}</div>`;
+    return `<div class="${cls}" onclick="ddClickItem(${i},${idx})">${pbq.items[i]}</div>`;
   }).join('');
 
   const zonesHTML = pbq.zones.map((zone, z) => {
@@ -2097,7 +2099,7 @@ function buildDDWidget(idx) {
       if (hasItem) cls += ' dd-has';
       else if (state.selectedItem !== null) cls += ' dd-ready';
     }
-    const fillText = hasItem ? pbq.items[placedItemIdx] : '<span style="opacity:.35">— drop here —</span>';
+    const fillText = hasItem ? pbq.items[placedItemIdx] : '<span style="opacity:.35">\u2014 drop here \u2014</span>';
     return `<div class="${cls}" onclick="ddClickZone(${z},${idx})">
       <span class="dd-zone-lbl">${zone}</span>
       <div class="dd-zone-fill">${fillText}</div>
@@ -2105,10 +2107,10 @@ function buildDDWidget(idx) {
   }).join('');
 
   return `<div class="dd-grid">
-    <div><div class="dd-panel-lbl">Items</div>${itemsHTML}</div>
+    <div><div class="dd-panel-lbl">Items \u2014 select one, then click a zone</div>${itemsHTML}</div>
     <div><div class="dd-panel-lbl">Drop Zones</div>${zonesHTML}</div>
   </div>
-  <div class="dd-hint">Click an item to select it, then click a zone to place it. Click a filled zone to return its item.</div>`;
+  <div class="dd-hint">Click an item to select it (it highlights), then click its matching zone. Click a placed item to return it.</div>`;
 }
 
 function ddClickItem(itemIdx, pbqIdx) {
@@ -2354,7 +2356,7 @@ function buildExam(n) {
 }
 
 // Active exam questions (rebuilt each attempt)
-let questions = buildExam(90);
+let questions = buildExam(80);
 
 // State — declared here so all functions below can reference them
 let currentQ = 0, correctCount = 0, wrongCount = 0, skippedCount = 0;
@@ -2568,7 +2570,7 @@ function showResults() {
 }
 
 function restartExam() {
-  questions       = buildExam(90);
+  questions       = buildExam(80);
   results         = new Array(questions.length).fill(null);
   currentQ        = 0; correctCount = 0; wrongCount = 0; skippedCount = 0;
   secondsLeft     = 90 * 60; answered = false;
